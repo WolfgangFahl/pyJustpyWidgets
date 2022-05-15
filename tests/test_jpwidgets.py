@@ -15,8 +15,8 @@ class TestJpWidgets(BaseTest):
         BaseTest.setUp(self)
         pass
         
-    def testLodGrid(self)
-    '''
-    test the List of Dict Grid component
-    '''
+    def testLodGrid(self):
+        '''
+        test the List of Dict Grid component
+        '''
     
