@@ -1,6 +1,7 @@
 # see https://justpy.io/tutorial/handling_events/
 import justpy as jp
 import socket
+import argparse
 
 def my_click(self, msg):
     print(msg)
@@ -14,4 +15,8 @@ def event_demo():
     d.additional_properties =['screenX', 'pageY','altKey','which','movementX','button', 'buttons']
     return wp
 
-jp.justpy(event_demo,host=socket.getfqdn(),port=10001)
+parser = argparse.ArgumentParser(description='event demo 1')
+parser.add_argument('host',default=socket.getfqdn())
+parser.add_argument('port',default=8000)
+args = parser.parse_args()
+jp.justpy(event_demo,host=args.host,port=args)

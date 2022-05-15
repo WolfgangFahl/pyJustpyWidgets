@@ -3,6 +3,7 @@
 import socket
 import justpy as jp
 import asyncio
+import argparse
 
 card_size = 0.5
 card_width = int(226 * card_size)
@@ -148,5 +149,9 @@ async def blackjack():
     return wp
 
 
-jp.justpy(blackjack,host=socket.getfqdn(),port=10201)
+parser = argparse.ArgumentParser(description='blackjack demo')
+parser.add_argument('host',default=socket.getfqdn())
+parser.add_argument('port',default=8000)
+args = parser.parse_args()
+jp.justpy(blackjack,host=args.host,port=args)
 
