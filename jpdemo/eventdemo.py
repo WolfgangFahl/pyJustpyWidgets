@@ -14,4 +14,4 @@ def event_demo():
     d.additional_properties =['screenX', 'pageY','altKey','which','movementX','button', 'buttons']
     return wp
 
-jp.justpy(event_demo,host=socket.gethostname(),port=10001)
+jp.justpy(event_demo,host=socket.getfqdn(),port=10001)
