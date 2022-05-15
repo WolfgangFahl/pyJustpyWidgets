@@ -17,6 +17,6 @@ def event_demo():
 
 parser = argparse.ArgumentParser(description='event demo 1')
 parser.add_argument('host',default=socket.getfqdn())
-parser.add_argument('port',default=8000)
+parser.add_argument('port',type=int,default=8000)
 args = parser.parse_args()
 jp.justpy(event_demo,host=args.host,port=args)

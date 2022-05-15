@@ -151,7 +151,7 @@ async def blackjack():
 
 parser = argparse.ArgumentParser(description='blackjack demo')
 parser.add_argument('host',default=socket.getfqdn())
-parser.add_argument('port',default=8000)
+parser.add_argument('port',type=int,default=8000)
 args = parser.parse_args()
 jp.justpy(blackjack,host=args.host,port=args)
 
