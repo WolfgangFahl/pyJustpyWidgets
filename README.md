@@ -12,7 +12,7 @@ Widgets and demo for [Justpy](https://justpy.io/)
 [Wiki](http://wiki.bitplan.com/index.php/pyJustpyWidgets)
 
 ## Demo
-[Demo](http://jpdemo.bitplancom)
+[Demo](http://jpdemo.bitplan.com)
 
 ### Authors
 * [Wolfgang Fahl](http://www.bitplan.com/Wolfgang_Fahl)
