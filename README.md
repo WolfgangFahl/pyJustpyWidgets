@@ -1,5 +1,5 @@
 # pyJustpyWidgets
-Widgets and demo for Justpy
+Widgets and demo for [Justpy](https://justpy.io/)
 
 [![pypi](https://img.shields.io/pypi/pyversions/pyJustpyWidgets)](https://pypi.org/project/pyJustpyWidgets/)
 [![Github Actions Build](https://github.com/WolfgangFahl/pyJustpyWidgets/workflows/Build/badge.svg?branch=main)](https://github.com/WolfgangFahl/pyJustpyWidgets/actions?query=workflow%3ABuild+branch%3Amain)
@@ -10,6 +10,9 @@ Widgets and demo for Justpy
 
 ## Documentation
 [Wiki](http://wiki.bitplan.com/index.php/pyJustpyWidgets)
+
+## Demo
+[Demo](http://jpdemo.bitplancom)
 
 ### Authors
 * [Wolfgang Fahl](http://www.bitplan.com/Wolfgang_Fahl)
