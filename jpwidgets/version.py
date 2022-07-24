@@ -11,5 +11,5 @@ class Version(object):
     name="pyJustpyWidgets"
     version='0.0.3'
     date = '2022-05-15'
-    updated = '2022-05-16'
+    updated = '2022-07-24'
     description='justpy Widgets'
