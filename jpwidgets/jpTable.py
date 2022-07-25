@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime
 from typing import List
 
@@ -17,11 +16,17 @@ class Table(jp.Div):
     thead_classes=''
 
 
-    def __init__(self, lod:List[dict],actionColumns:list,**kwargs):
+    def __init__(self, lod:List[dict],actionColumns:list=[],allowInput:bool=True,**kwargs):
         '''
         constructor
+        
+        Args:
+            lod(List[dict]): the table content
+            actionColumns: a list of action columns
+            allowInput(bool): allow editing/input
         '''
         self.lod = lod
+        self.allowInput=allowInput
         super().__init__(**kwargs)
         self.table = jp.Table(a=self)
         self.table.set_class(self.t_classes)
@@ -36,7 +41,7 @@ class Table(jp.Div):
                 jp.Th(text=item, classes=self.th_classes, a=tr)
             tbody = jp.Tbody(a=self.table)
             for _i, row in enumerate(self.lod):
-                TableRow(a=tbody, record=row, headers=headers, actionColumns=self.actionColumns)
+                TableRow(table=self,a=tbody, record=row, headers=headers, actionColumns=self.actionColumns)
         self.debugContainer = DebugOutput(a=self)
 
 
@@ -46,17 +51,21 @@ class TableRow(jp.Tr):
     '''
     td_classes = ''
 
-    def __init__(self, record:dict, headers:list, actionColumns:list=None, **kwargs):
+    def __init__(self, table,record:dict, headers:list, actionColumns:list=None, **kwargs):
+        '''
+        constructor
+        '''
         super().__init__(**kwargs)
+        self.table=table
         self.record = record
         self.headers=headers
-        self.inputCells = []
+        self.cells = []
         for actionCol in actionColumns:
             if isinstance(actionCol, ButtonColumn):
                 actionCol.getTableData(a=self, row=self)
         for key in headers[len(actionColumns):]:
-            cell = TableData(a=self, inputValue=self.record.get(key), label=key, classes=self.td_classes, row=self)
-            self.inputCells.append(cell)
+            cell = TableData(a=self, inputValue=self.record.get(key), label=key, classes=self.td_classes, row=self,allowInput=self.table.allowInput)
+            self.cells.append(cell)
 
     def updateRowRecord(self, key:str, value):
         """
@@ -77,25 +86,38 @@ class TableRow(jp.Tr):
         """
         Disables input fields of the row
         """
-        for cell in self.inputCells:
-            cell.input.disabled=True
+        for cell in self.cells:
+            if cell.isInput:
+                cell.input.disabled=True
 
     def enableInput(self):
         """
         enables input fields of the row
         """
-        for cell in self.inputCells:
-            cell.input.disabled=False
+        for cell in self.cells:
+            if cell.isInput:
+                cell.input.disabled=False
 
 
 class TableData(jp.Td):
     '''
+    a table Cell
     '''
-    def __init__(self, row:TableRow, inputValue, label:str, **kwargs):
+    def __init__(self, row:TableRow, inputValue, label:str, allowInput:bool=True,**kwargs):
+        '''
+        constructor
+        '''
         super(TableData, self).__init__(**kwargs)
         self.row = row
         self.inputValue = inputValue
         self.label = label
+        self.isInput=allowInput
+        if allowInput:
+            self.input = self.getInput()
+        else:
+            self.inner_html=inputValue
+        
+    def getInput(self):
         if isinstance(self.inputValue, datetime):
             jpinput = jp.InputChangeOnly(a=self, type='date', value=self.inputValue.date().isoformat(), classes="form-input px-4 py-3 rounded-full")
         else:
@@ -103,7 +125,7 @@ class TableData(jp.Td):
         jpinput.on("change", self.on_input_change)
         jpinput.row = self.row
         jpinput.label = self.label
-        self.input = jpinput
+        return jpinput
 
     @staticmethod
     def on_input_change(self, msg):
@@ -111,6 +133,7 @@ class TableData(jp.Td):
         oldValue = self.row.updateRowRecord(self.a.label, newValue)
         #update record
         msg = f"{datetime.now().isoformat()} Changed {self.label} from '{oldValue}' to '{newValue}'"
+        # FIXME improve reference
         self.a.a.a.a.a.debugContainer.addMessage(msg)
 
 
@@ -139,7 +162,7 @@ class Collapsible(jp.Div):
     """
     Collapsible div
     """
-    button_classes = 'm-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+    button_classes = 'btn btn-primary'
 
     def __init__(self, label:str, **kwargs):
         super().__init__(**kwargs)
@@ -148,11 +171,11 @@ class Collapsible(jp.Div):
         self.body.visibility_state = "invisible"
         self.btn.body=self.body
         self.body.a = self
-        self.body.classes='flex flex-row'
+        self.body.classes=''
         self.on("click", self.toggle_visible)
 
     @staticmethod
-    def toggle_visible(self, msg):
+    def toggle_visible(self, _msg):
         if self.body.visibility_state == 'visible':
             self.body.set_class('invisible')
             self.body.visibility_state = 'invisible'
@@ -162,6 +185,9 @@ class Collapsible(jp.Div):
 
 
 class ButtonColumn:
+    '''
+    a button column
+    '''
 
     def __init__(self, name:str):
         self.name = name
@@ -174,43 +200,6 @@ class ButtonColumn:
 
     async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
         return NotImplemented
-
-
-class EchoButtonColumn(ButtonColumn):
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        print(msg)
-        print(row.record)
-        debugContainer.addMessage(str(row.record))
-
-
-class EchoTwiceButtonColumn(ButtonColumn):
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        print(msg)
-        print(row.record)
-        debugContainer.addMessage(str(row.record))
-        debugContainer.addMessage("Echoing in 5 seconds again")
-        await msg.page.update()
-        await asyncio.sleep(5)
-        debugContainer.addMessage(str(row.record))
-        await msg.page.update()
-
-
-class EchoTwiceInputDisabledButtonColumn(ButtonColumn):
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        print(msg)
-        print(row.record)
-        debugContainer.addMessage(str(row.record))
-        debugContainer.addMessage("Echoing in 5 seconds again")
-        row.disableInput()
-        await msg.page.update()
-        await asyncio.sleep(5)
-        debugContainer.addMessage(str(row.record))
-        row.enableInput()
-        await msg.page.update()
-
 
 
 class TableDataButton(jp.Td):

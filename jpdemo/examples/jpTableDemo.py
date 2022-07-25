@@ -2,11 +2,9 @@
 @author Tim Holzheim
 2022-06
 '''
+import asyncio
 from datetime import datetime
-
-from jpwidgets.jpTable import Table, EchoButtonColumn, EchoTwiceButtonColumn, EchoTwiceInputDisabledButtonColumn
-
-import justpy as jp
+from jpwidgets.jpTable import Table,TableRow, ButtonColumn, DebugOutput
 import sys
 from jpwidgets.bt5widgets import App
 
@@ -31,6 +29,41 @@ class Version(object):
 {description}
 
   Created by {authors} on {date} last updated {updated}"""
+  
+class EchoButtonColumn(ButtonColumn):
+
+    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
+        print(msg)
+        print(row.record)
+        debugContainer.addMessage(str(row.record))
+
+
+class EchoTwiceButtonColumn(ButtonColumn):
+
+    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
+        print(msg)
+        print(row.record)
+        debugContainer.addMessage(str(row.record))
+        debugContainer.addMessage("Echoing in 5 seconds again")
+        await msg.page.update()
+        await asyncio.sleep(5)
+        debugContainer.addMessage(str(row.record))
+        await msg.page.update()
+
+
+class EchoTwiceInputDisabledButtonColumn(ButtonColumn):
+
+    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
+        print(msg)
+        print(row.record)
+        debugContainer.addMessage(str(row.record))
+        debugContainer.addMessage("Echoing in 5 seconds again")
+        row.disableInput()
+        await msg.page.update()
+        await asyncio.sleep(5)
+        debugContainer.addMessage(str(row.record))
+        row.enableInput()
+        await msg.page.update()
 
 class JpTableDemo(App):
     '''
@@ -56,41 +89,181 @@ class JpTableDemo(App):
         '''
         head_html="""<link rel="stylesheet" href="/static/css/md_style_indigo.css">"""
         wp=self.getWp(head_html)
-        lod=[{
-                    "pageTitle": "WebSci 2019",
-                    "acronym": "WebSci 2019",
-                    "ordinal": 11,
-                    "homepage": "http://websci19.webscience.org/",
-                    "title": "11th ACM Conference on Web Science",
-                    "eventType": "Conference",
-                    "startDate": datetime.fromisoformat("2019-06-30"),
-                    "endDate": datetime.fromisoformat("2019-07-03"),
-                    "inEventSeries": "WebSci",
-                    "country": "USA",
-                    "region": "US-MA",
-                    "city": "Boston",
-                    "acceptedPapers": 41,
-                    "submittedPapers": 120,
-                    "presence": "online",
-                    "wikicfpId": 891,
-                    "tibKatId":"1736060724",
-                    "subject": "Software engineering",
-                    "ISBN":"9781450370707",
-                    "gndId":"1221636014"
-                }
-        ]
-        cellValidationMap = {
-            'beer_servings': lambda value: value.isnumeric()
-        }
-        self.table = Table(lod=[{"index":i, **lod[0]} for i in range(5)],
-                      editable=True,
-                      cellValidationMap=cellValidationMap,
+        lod=[
+  {
+    "dateOfBirth": datetime.fromisoformat("1988-04-14 00:00:00"),
+    "familyName": "Modeste",
+    "givenName": "Anthony",
+    "league": "Bundesliga",
+    "nationalOf": "France",
+    "position": "forward",
+    "speaks": "French",
+    "team": "1. FC K\u00f6ln"
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1990-10-14 00:00:00"),
+    "familyName": "Ujah",
+    "givenName": "Anthony",
+    "league": "Bundesliga",
+    "nationalOf": "Nigeria",
+    "position": "forward",
+    "speaks": "Nigerian Pidgin",
+    "team": "1. FC Union Berlin"
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1991-10-13 00:00:00"),
+    "familyName": "Riley",
+    "givenName": "Joe",
+    "league": "EFL League One",
+    "nationalOf": "United Kingdom",
+    "position": "defender",
+    "speaks": "English",
+    "team": "Bury F.C."
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1995-02-08 00:00:00"),
+    "familyName": "Kimmich",
+    "givenName": "Joshua",
+    "league": "Bundesliga",
+    "nationalOf": "Germany",
+    "position": "midfielder",
+    "speaks": "German",
+    "team": "FC Bayern Munich"
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("2000-07-21 00:00:00"),
+    "familyName": "Haaland",
+    "givenName": "Erling",
+    "league": "Premier League",
+    "nationalOf": "Norway",
+    "position": "forward",
+    "speaks": "Norwegian",
+    "team": "Manchester City F.C."
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1996-12-06 00:00:00"),
+    "familyName": "Riley",
+    "givenName": "Joe",
+    "league": "Premier League",
+    "nationalOf": "United Kingdom",
+    "position": "fullback",
+    "speaks": "English",
+    "team": "Manchester United F.C."
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1987-06-24 00:00:00"),
+    "familyName": "Messi",
+    "givenName": "Lionel",
+    "league": "Ligue 1",
+    "nationalOf": "Argentina",
+    "position": "forward",
+    "speaks": "Spanish",
+    "team": "Paris Saint-Germain F.C."
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1998-12-20 00:00:00"),
+    "familyName": "Mbapp\u00e9",
+    "givenName": "Kylian",
+    "league": "Ligue 1",
+    "nationalOf": "France",
+    "position": "forward",
+    "speaks": "French",
+    "team": "Paris Saint-Germain F.C."
+  },
+  {
+    "dateOfBirth": datetime.fromisoformat("1990-10-14 00:00:00"),
+    "familyName": "Ujah",
+    "givenName": "Anthony",
+    "league": "2. Bundesliga",
+    "nationalOf": "Nigeria",
+    "position": "forward",
+    "speaks": "English",
+    "team": "SV Werder Bremen"
+  }
+]
+        self.table1 = Table(lod=lod,
+                      allowInput=True,
                       a=self.contentbox,
                       actionColumns=[
                           EchoButtonColumn(name="Echo"),
                           EchoTwiceButtonColumn(name="EchoTwice"),
                           EchoTwiceInputDisabledButtonColumn(name="EchoTwiceDisableInput")
                       ])
+        plod=[
+  {
+    "nickNames": "American Fabius",
+    "president": "http://www.wikidata.org/entity/Q23",
+    "presidentLabel": "George Washington"
+  },
+  {
+    "nickNames": "Barry",
+    "president": "http://www.wikidata.org/entity/Q76",
+    "presidentLabel": "Barack Obama"
+  },
+  {
+    "nickNames": "The Comeback Kid,Slick Willie",
+    "president": "http://www.wikidata.org/entity/Q1124",
+    "presidentLabel": "Bill Clinton"
+  },
+  {
+    "nickNames": "Joe",
+    "president": "http://www.wikidata.org/entity/Q6279",
+    "presidentLabel": "Joe Biden"
+  },
+  {
+    "nickNames": "Jack",
+    "president": "http://www.wikidata.org/entity/Q9696",
+    "presidentLabel": "John F. Kennedy"
+  },
+  {
+    "nickNames": "Ike",
+    "president": "http://www.wikidata.org/entity/Q9916",
+    "presidentLabel": "Dwight D. Eisenhower"
+  },
+  {
+    "nickNames": "Dick Nixon",
+    "president": "http://www.wikidata.org/entity/Q9588",
+    "presidentLabel": "Richard Nixon"
+  },
+  {
+    "nickNames": "Old Kinderhook",
+    "president": "http://www.wikidata.org/entity/Q11820",
+    "presidentLabel": "Martin Van Buren"
+  },
+  {
+    "nickNames": "Old Tippecanoe",
+    "president": "http://www.wikidata.org/entity/Q11869",
+    "presidentLabel": "William Henry Harrison"
+  },
+  {
+    "nickNames": "Old Hickory",
+    "president": "http://www.wikidata.org/entity/Q11817",
+    "presidentLabel": "Andrew Jackson"
+  },
+  {
+    "nickNames": "Old Rough and ready",
+    "president": "http://www.wikidata.org/entity/Q11896",
+    "presidentLabel": "Zachary Taylor"
+  },
+  {
+    "nickNames": "The Donald",
+    "president": "http://www.wikidata.org/entity/Q22686",
+    "presidentLabel": "Donald Trump"
+  },
+  {
+    "nickNames": "Teddy",
+    "president": "http://www.wikidata.org/entity/Q33866",
+    "presidentLabel": "Theodore Roosevelt"
+  },
+  {
+    "nickNames": "\u201cUnconditional Surrender\u201d Grant",
+    "president": "http://www.wikidata.org/entity/Q34836",
+    "presidentLabel": "Ulysses S Grant"
+  }
+]
+        self.table2 = Table(lod=plod,
+                      allowInput=False,
+                      a=self.contentbox)
         return wp
 
 DEBUG = 1
