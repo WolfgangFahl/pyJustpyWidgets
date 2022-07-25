@@ -34,6 +34,18 @@ class App(object):
         self.title=title
         self.menu=""
         
+    def mainInstance(self,argv=None,callback=None): # IGNORE:C0111
+        '''main program.'''
+        if argv is None:
+            argv=sys.argv[1:]
+        if callback is None:
+            if hasattr(self, "content"):
+                if callable(self.content):
+                    callback=self.content
+        if callback is None:
+            raise Exception("no callback defined and callable content function not declared")
+        self.cmdLine(argv,callback)
+        
     def getParser(self):
         '''
         get the argument parser

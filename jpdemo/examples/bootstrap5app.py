@@ -93,21 +93,11 @@ class Bootstrap5ExampleApp(App):
         for col in [1,2,3,4,6,12]:
             colSelector.add(jp.Option(value=col,text=str(col)))
         self.showRowsAndCols()
-        return wp        
-
-
-def main(argv=None): # IGNORE:C0111
-    '''main program.'''
-
-    if argv is None:
-        argv=sys.argv[1:]
-        
-    app=Bootstrap5ExampleApp(Version)
-    app.cmdLine(argv,app.content)
-
+        return wp
     
 DEBUG = 1
 if __name__ == "__main__":
     if DEBUG:
         sys.argv.append("-d")
-    sys.exit(main())
+    app=Bootstrap5ExampleApp(Version)
+    sys.exit(app.mainInstance())

@@ -49,8 +49,6 @@ class JpTableDemo(App):
         self.addMenuLink(text='github',icon='github', href="https://github.com/WolfgangFahl/pyJustpyWidgets")
         self.addMenuLink(text='Documentation',icon='file-document',href="https://wiki.bitplan.com/index.php/PyJustpyWidgets")
         self.addMenuLink(text='Source',icon='file-code',href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/examples/jpTableDemo.py")
-        self.rows=3
-        self.cols=3
         
     async def content(self):
         '''
@@ -95,19 +93,9 @@ class JpTableDemo(App):
                       ])
         return wp
 
-
-def main(argv=None): # IGNORE:C0111
-    '''main program.'''
-
-    if argv is None:
-        argv=sys.argv[1:]
-        
-    app=JpTableDemo(Version)
-    app.cmdLine(argv,app.content)
-
-    
 DEBUG = 1
 if __name__ == "__main__":
     if DEBUG:
         sys.argv.append("-d")
-    sys.exit(main())
+    app=JpTableDemo(Version)
+    sys.exit(app.mainInstance())
