@@ -1,8 +1,15 @@
+'''
+@author Tim Holzheim
+2022-06
+'''
 from datetime import datetime
 
 from jpwidgets.jpTable import Table, EchoButtonColumn, EchoTwiceButtonColumn, EchoTwiceInputDisabledButtonColumn
 
 import justpy as jp
+import argparse
+import socket
+
 
 
 def show_demo():
@@ -46,4 +53,8 @@ def show_demo():
 
 
 if __name__ == '__main__':
-    jp.justpy(show_demo, port=8400)
+    parser = argparse.ArgumentParser(description='jpTable Demo')
+    parser.add_argument('--host',default=socket.getfqdn())
+    parser.add_argument('--port',type=int,default=8000)
+    args = parser.parse_args()
+    jp.justpy(show_demo, host=args.host,port=args.port)

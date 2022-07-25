@@ -201,4 +201,21 @@ class App(object):
   </a>
 """        
              
+class ComboBox(jp.Input):
+    '''
+    combo box with attached datalist
+    '''
+    
+    def __init__(self,**kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(**kwargs)
+        self.clearOptions()
+        
+    def clearOptions(self):
+        self.datalist=[]
+        
+    def addOption(self,option):
+        self.datalist.append(option)
         
