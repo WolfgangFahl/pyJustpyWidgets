@@ -11,10 +11,10 @@ class Table(jp.Div):
     '''
 
     t_classes = "table-auto"
-    tr_even_classes = 'bg-gray-100 '
+    tr_even_classes = ''
     tr_odd_classes = ''
-    th_classes = 'w-1/2 border border-slate-300 dark:border-slate-600 font-semibold p-4 text-slate-900 dark:text-slate-200 text-left'
-    thead_classes='bg-slate-50 dark:bg-slate-700'
+    th_classes = ''
+    thead_classes=''
 
 
     def __init__(self, lod:List[dict],actionColumns:list,**kwargs):
@@ -35,7 +35,7 @@ class Table(jp.Div):
             for item in headers:
                 jp.Th(text=item, classes=self.th_classes, a=tr)
             tbody = jp.Tbody(a=self.table)
-            for i, row in enumerate(self.lod):
+            for _i, row in enumerate(self.lod):
                 TableRow(a=tbody, record=row, headers=headers, actionColumns=self.actionColumns)
         self.debugContainer = DebugOutput(a=self)
 
@@ -44,7 +44,7 @@ class TableRow(jp.Tr):
     '''
     a table row
     '''
-    td_classes = 'px-4 py-2 text-center'
+    td_classes = ''
 
     def __init__(self, record:dict, headers:list, actionColumns:list=None, **kwargs):
         super().__init__(**kwargs)
@@ -97,13 +97,13 @@ class TableData(jp.Td):
         self.inputValue = inputValue
         self.label = label
         if isinstance(self.inputValue, datetime):
-            input = jp.InputChangeOnly(a=self, type='date', value=self.inputValue.date().isoformat(), classes="form-input px-4 py-3 rounded-full")
+            jpinput = jp.InputChangeOnly(a=self, type='date', value=self.inputValue.date().isoformat(), classes="form-input px-4 py-3 rounded-full")
         else:
-            input = jp.InputChangeOnly(a=self, value=self.inputValue, classes="form-input px-4 py-3 rounded-full")
-        input.on("change", self.on_input_change)
-        input.row = self.row
-        input.label = self.label
-        self.input = input
+            jpinput = jp.InputChangeOnly(a=self, value=self.inputValue, classes="form-input px-4 py-3 rounded-full")
+        jpinput.on("change", self.on_input_change)
+        jpinput.row = self.row
+        jpinput.label = self.label
+        self.input = jpinput
 
     @staticmethod
     def on_input_change(self, msg):
@@ -215,7 +215,7 @@ class EchoTwiceInputDisabledButtonColumn(ButtonColumn):
 
 class TableDataButton(jp.Td):
 
-    btn_classes = "px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm"
+    btn_classes = "btn btn-primary"
 
     def __init__(self, text:str, row:TableRow, btnCol:ButtonColumn, **kwargs):
         super().__init__(**kwargs)
@@ -229,11 +229,3 @@ class TableDataButton(jp.Td):
         debugContainer = self.row.a.a.a.debugContainer
         if getattr(self, "actionCol"):
             await self.actionCol.buttonFunctionOnClick(self.row, debugContainer, msg)
-
-
-
-
-
-
-
-
