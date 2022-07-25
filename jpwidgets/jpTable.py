@@ -6,6 +6,9 @@ import justpy as jp
 
 
 class Table(jp.Div):
+    '''
+    a table
+    '''
 
     t_classes = "table-auto"
     tr_even_classes = 'bg-gray-100 '
@@ -15,6 +18,9 @@ class Table(jp.Div):
 
 
     def __init__(self, lod:List[dict],actionColumns:list,**kwargs):
+        '''
+        constructor
+        '''
         self.lod = lod
         super().__init__(**kwargs)
         self.table = jp.Table(a=self)
@@ -35,6 +41,9 @@ class Table(jp.Div):
 
 
 class TableRow(jp.Tr):
+    '''
+    a table row
+    '''
     td_classes = 'px-4 py-2 text-center'
 
     def __init__(self, record:dict, headers:list, actionColumns:list=None, **kwargs):
@@ -80,7 +89,8 @@ class TableRow(jp.Tr):
 
 
 class TableData(jp.Td):
-
+    '''
+    '''
     def __init__(self, row:TableRow, inputValue, label:str, **kwargs):
         super(TableData, self).__init__(**kwargs)
         self.row = row
