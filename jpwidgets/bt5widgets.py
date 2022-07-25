@@ -104,6 +104,57 @@ class App(object):
         '''
         jp.justpy(callback,host=self.host,port=self.port)
         
+    def handleException(self,ex):
+        '''
+        handle the given exception
+        
+        Args:
+            ex(Exception): the exception to handle
+        '''
+        errorMsg=str(ex)
+        trace=""
+        if self.debug:
+            trace=traceback.format_exc()
+        if self.debug:
+            print(errorMsg)
+            print(trace)
+        errorMsgHtml=f"{errorMsg}<pre>{trace}</pre>"
+        self.errors.inner_html=errorMsgHtml
+        
+    def createSelect(self,text,value,change,a):
+        '''
+        create a select control with a label with the given text, the default value
+        and a change onChange function having the parent a
+        
+        Args:
+            text(str): the text for the label
+            value(str): the selected value
+            change(func): an onChange function
+            a(object): the parent component of the Select control
+        '''
+        selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
+        select=jp.Select(a=a,classes="form-select",value=value,change=change)
+        selectorLabel.for_component=select
+        return select
+    
+    def createInput(self,text,placeholder,change,a,size:int=30):
+        '''
+        create an input control with a label with the given text
+        a placeholder text and a change onChange function having the parent a
+        
+        Args:
+            text(str): the text for the label
+            placeholder(str): a placeholder value
+            change(func): an onChange function
+            a(object): the parent component of the Select control
+            size(int). the size of the input
+        '''
+        inputLabel=jp.Label(text=text,a=a,classes="form-label label")
+        jpinput=jp.Input(a=a,classes="form-input",size=size,placeholder=placeholder)
+        jpinput.on('input', change)
+        inputLabel.for_component=inputLabel
+        return jpinput
+        
     def cmdLine(self,argv,callback):
         '''
         cmdLine (main)

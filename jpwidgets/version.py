@@ -9,7 +9,7 @@ class Version(object):
     Version handling for pyJustpyWidgets
     '''
     name="pyJustpyWidgets"
-    version='0.0.3'
+    version='0.0.4'
     date = '2022-05-15'
-    updated = '2022-07-24'
+    updated = '2022-07-25'
     description='justpy Widgets'
