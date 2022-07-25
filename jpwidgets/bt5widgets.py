@@ -230,4 +230,66 @@ class ComboBox(jp.Input):
         
     def addOption(self,option):
         self.datalist.append(option)
-        
+
+
+class ProgressBar(jp.Div):
+    """
+    Displays a progressbar
+    see https://getbootstrap.com/docs/5.0/components/progress/
+    """
+
+    def __init__(self, animated:bool=False, **kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(classes="progress", **kwargs)
+        self.animated = animated
+        self.value = 0
+        self.bar = self.getBar()
+
+    def getBar(self):
+        """
+        generate the actual bar based on the progress
+        """
+        classes = "progress-bar"
+        if self.animated:
+            classes += " progress-bar-striped progress-bar-animated"
+        valueProps = {
+            "aria-valuemin": "0",
+            "aria-valuemax": "100",
+            "aria-valuenow": self.value,
+            "style":f"width: {self.value}%"
+        }
+        return jp.Div(a=self, classes=classes, **valueProps)
+
+    def updateProgress(self, value:int=1):
+        """
+        update progress bar to the given value
+        """
+        if value >=0 and value <= 100:
+            self.value = value
+            self.delete_components()
+            self.bar = self.getBar()
+
+    def incrementProgress(self, value: int):
+        """
+        increment the progress bar by the given value
+        """
+        self.updateProgress(min(100, self.value + value))
+
+
+class Spinner(jp.Div):
+    """
+    bootstrap5 spinner
+    see https://getbootstrap.com/docs/5.0/components/spinners/
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    """
+
+    def __init__(self, **kwargs):
+        """
+        constructor
+        """
+        super(Spinner, self).__init__(classes="spinner-border", role="status", **kwargs)
+        self.span = jp.Span(a=self, classes="visually-hidden", text="Loading...")
