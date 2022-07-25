@@ -282,14 +282,38 @@ class Spinner(jp.Div):
     """
     bootstrap5 spinner
     see https://getbootstrap.com/docs/5.0/components/spinners/
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
     """
 
     def __init__(self, **kwargs):
         """
         constructor
         """
-        super(Spinner, self).__init__(classes="spinner-border", role="status", **kwargs)
+        classes = "spinner-border"
+        kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
+        super(Spinner, self).__init__(role="status", **kwargs)
         self.span = jp.Span(a=self, classes="visually-hidden", text="Loading...")
+
+class Alert(jp.Div):
+    """
+    Bootstrap 5 Alert
+    see https://getbootstrap.com/docs/5.0/components/alerts/
+    """
+
+    def __init__(self, **kwargs):
+        """
+        constructor
+        """
+        super(Alert, self).__init__(classes="alert alert-warning alert-dismissible fade show", role="alert", **kwargs)
+        conf={
+            "data-bs-dismiss":"alert",
+            "classes":"btn-close",
+            "aria-label":"Close"
+        }
+        self.btn = jp.Button(a=self, **conf)
+        self.btn.on("click", self.delete_alert)
+
+    def delete_alert(self, msg):
+        """
+        delete the alert message
+        """
+        self.a.remove_component(self)

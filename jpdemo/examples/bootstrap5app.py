@@ -5,7 +5,8 @@ Created on 2022-07-25
 '''
 import sys
 import justpy as jp
-from jpwidgets.bt5widgets import App
+from jpwidgets.bt5widgets import App, ProgressBar, Spinner, Alert
+
 
 class Version(object):
     '''
@@ -93,7 +94,48 @@ class Bootstrap5ExampleApp(App):
         for col in [1,2,3,4,6,12]:
             colSelector.add(jp.Option(value=col,text=str(col)))
         self.showRowsAndCols()
+
+        self.widgets = ShowBootstrap5Widgets(a=self.contentbox)
         return wp
+
+class ShowBootstrap5Widgets(jp.Div):
+    """
+    Bootstrap 5 Widget Demos
+    """
+
+    def __init__(self, **kwargs):
+        """
+        constructor
+        """
+        super(ShowBootstrap5Widgets, self).__init__(**kwargs)
+        self.sectionHeader = jp.H2(a=self,  text="Bootstrap 5 Widgets")
+        self.subSectionHeader = jp.H3(a=self, text="Progress Indication Widgets")
+        self.button = jp.Button(a=self, text="Press to progress", classes="btn btn-primary")
+        self.button.on("click", self.progress_demo)
+        self.progress_count = 0
+        self.progressGrid = jp.Div(a=self, classes="d-grid gap-3")
+        self.progressDivs = [jp.Div(a=self.progressGrid, classes="p-2 d-flex justify-content-center"),
+                             jp.Div(a=self.progressGrid, classes="p-2"),
+                             jp.Div(a=self.progressGrid, classes="p-2"),]
+        self.spinner = Spinner(a=self.progressDivs[0])
+        self.progressBar = ProgressBar(a=self.progressDivs[1])
+        self.progressBarAnimated = ProgressBar(a=self.progressDivs[2], animated=True)
+
+    def progress_demo(self, msg):
+        """
+        update progress bars of the demo
+        """
+        if self.progress_count < 100:
+            value=18
+            self.progress_count += value
+            self.progressBar.incrementProgress(value)
+            self.progressBarAnimated.incrementProgress(value)
+        if self.progress_count >= 100:
+            Alert(a=self, text="Demo process completed!!!  → resetting demo...")
+            self.progress_count = 0
+            self.progressBar.updateProgress(self.progress_count)
+            self.progressBarAnimated.updateProgress(self.progress_count)
+
     
 DEBUG = 1
 if __name__ == "__main__":
