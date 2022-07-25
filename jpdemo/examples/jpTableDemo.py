@@ -4,9 +4,10 @@
 '''
 import asyncio
 from datetime import datetime
+import justpy as jp
 from jpwidgets.jpTable import Table,TableRow, ButtonColumn, DebugOutput
 import sys
-from jpwidgets.bt5widgets import App
+from jpwidgets.bt5widgets import App, Link
 
 class Version(object):
     '''
@@ -58,11 +59,11 @@ class EchoTwiceInputDisabledButtonColumn(ButtonColumn):
         print(row.record)
         debugContainer.addMessage(str(row.record))
         debugContainer.addMessage("Echoing in 5 seconds again")
-        row.disableInput()
+        row.disableInput(True)
         await msg.page.update()
         await asyncio.sleep(5)
         debugContainer.addMessage(str(row.record))
-        row.enableInput()
+        row.disableInput(False)
         await msg.page.update()
 
 class JpTableDemo(App):
@@ -82,7 +83,22 @@ class JpTableDemo(App):
         self.addMenuLink(text='github',icon='github', href="https://github.com/WolfgangFahl/pyJustpyWidgets")
         self.addMenuLink(text='Documentation',icon='file-document',href="https://wiki.bitplan.com/index.php/PyJustpyWidgets")
         self.addMenuLink(text='Source',icon='file-code',href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/examples/jpTableDemo.py")
-        
+       
+    async def onWdLinks(self,msg):
+        '''
+        replace cell content with links
+        '''
+        try:
+            target=msg["target"]
+            target.disabled=True
+            for rowKey in self.table2.rowsByKey.keys():
+                wikidataLink=self.table2.getCellValue(rowKey,"president")
+                itemId=wikidataLink.replace("http://www.wikidata.org/entity/","")
+                link=Link.create(url=wikidataLink,text=itemId)
+                self.table2.updateCell(rowKey, "president",link)
+        except Exception as ex:
+            self.handleException(ex)
+            
     async def content(self):
         '''
         show the content
@@ -181,9 +197,16 @@ class JpTableDemo(App):
     "team": "SV Werder Bremen"
   }
 ]
+        rowA=jp.Div(classes="row",a=self.contentbox)
+        rowB=jp.Div(classes="row",a=self.contentbox)  
+        rowC=jp.Div(classes="row",a=self.contentbox)  
+        rowD=jp.Div(classes="row",a=self.contentbox)     
+        colD1=jp.Div(classes="col-1",a=rowD)
+        debugContainer = DebugOutput(a=rowB)
         self.table1 = Table(lod=lod,
                       allowInput=True,
-                      a=self.contentbox,
+                      a=rowA,
+                      debugContainer=debugContainer,
                       actionColumns=[
                           EchoButtonColumn(name="Echo"),
                           EchoTwiceButtonColumn(name="EchoTwice"),
@@ -263,7 +286,9 @@ class JpTableDemo(App):
 ]
         self.table2 = Table(lod=plod,
                       allowInput=False,
-                      a=self.contentbox)
+                      primaryKey='president',
+                      a=rowC)
+        _wdLinks=jp.Button(text="Wikidata Links",classes="btn btn-primary",a=colD1,click=self.onWdLinks)
         return wp
 
 DEBUG = 1

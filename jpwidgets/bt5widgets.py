@@ -212,6 +212,25 @@ class App(object):
     <i class='mdi mdi-{icon} headerboxicon'></i>
   </a>
 """        
+
+class Link:
+    '''
+    a link
+    '''
+    @staticmethod
+    def create(url,text,tooltip=None):
+        '''
+        create a link for the given url and text
+        
+        Args:
+            url(str): the url
+            text(str): the text
+            tooltip(str): an optional tooltip
+        '''
+        title="" if tooltip is None else f" title='{tooltip}'"
+        link=f"<a href='{url}{title}'>{text}</a>"
+        return link
+
              
 class ComboBox(jp.Input):
     '''
