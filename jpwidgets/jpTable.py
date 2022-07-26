@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 import justpy as jp
+from jpwidgets.bt5widgets import Collapsible
 
 class Table(jp.Div):
     '''
@@ -204,30 +205,6 @@ class DebugOutput(jp.Div):
     def addMessage(self, msg:str):
         self.messages.append(msg)
 
-class Collapsible(jp.Div):
-    """
-    Collapsible div
-    """
-    button_classes = 'btn btn-primary'
-
-    def __init__(self, label:str, **kwargs):
-        super().__init__(**kwargs)
-        self.btn = jp.Button(a=self, text=label, classes=self.button_classes)
-        self.body = jp.Div(a=self)
-        self.body.visibility_state = "invisible"
-        self.btn.body=self.body
-        self.body.a = self
-        self.body.classes=''
-        self.on("click", self.toggle_visible)
-
-    @staticmethod
-    def toggle_visible(self, _msg):
-        if self.body.visibility_state == 'visible':
-            self.body.set_class('invisible')
-            self.body.visibility_state = 'invisible'
-        else:
-            self.body.set_class('visible')
-            self.body.visibility_state = 'visible'
 
 
 class ButtonColumn:

@@ -331,8 +331,36 @@ class Alert(jp.Div):
         self.btn = jp.Button(a=self, **conf)
         self.btn.on("click", self.delete_alert)
 
-    def delete_alert(self, msg):
+    def delete_alert(self, _msg):
         """
         delete the alert message
         """
         self.a.remove_component(self)
+        
+class Collapsible(jp.Div):
+    """
+    Collapsible div
+    """
+    button_classes = 'btn btn-primary'
+
+    def __init__(self, label:str, **kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(**kwargs)
+        self.btn = jp.Button(a=self, text=label, classes=self.button_classes)
+        self.body = jp.Div(a=self)
+        self.body.visibility_state = "invisible"
+        self.btn.body=self.body
+        self.body.a = self
+        self.body.classes=''
+        self.on("click", self.toggle_visible)
+
+    @staticmethod
+    def toggle_visible(self, _msg):
+        if self.body.visibility_state == 'visible':
+            self.body.set_class('invisible')
+            self.body.visibility_state = 'invisible'
+        else:
+            self.body.set_class('visible')
+            self.body.visibility_state = 'visible'
