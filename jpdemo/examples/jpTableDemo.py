@@ -5,9 +5,9 @@
 import asyncio
 from datetime import datetime
 import justpy as jp
-from jpwidgets.jpTable import Table,TableRow, ButtonColumn, DebugOutput
+from jpwidgets.jpTable import Table,TableRow,TableData
 import sys
-from jpwidgets.bt5widgets import App, Link
+from jpwidgets.bt5widgets import App, Link,  DebugOutput
 
 class Version(object):
     '''
@@ -31,40 +31,72 @@ class Version(object):
 
   Created by {authors} on {date} last updated {updated}"""
   
-class EchoButtonColumn(ButtonColumn):
+class ButtonColumn:
+    '''
+    a button column
+    '''
+
+    def __init__(self, name:str):
+        self.name = name
+        self.tdClass: type = TableDataButton
+
+    def getTableData(self, a, row:TableRow) -> TableData:
+        tabledata = self.tdClass(a=a, text=self.name, row=row, btnCol=self)
+        return tabledata
+
 
     async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
+        return NotImplemented
+
+
+class TableDataButton(jp.Td):
+
+    btn_classes = "btn btn-primary"
+
+    def __init__(self, text:str, row:TableRow, btnCol:ButtonColumn, **kwargs):
+        super().__init__(**kwargs)
+        self.btn = jp.Button(a=self, text=text, click=self.on_button_click, classes=self.btn_classes)
+        self.btn.row = row
+        self.btn.actionCol = btnCol
+
+    @staticmethod
+    async def on_button_click(self, msg):
+        print(msg)
+        debugContainer = self.row.a.a.a.debugContainer
+        if getattr(self, "actionCol"):
+            await self.actionCol.buttonFunctionOnClick(self.row, debugContainer, msg)
+  
+class EchoClick():
+    
+    @classmethod
+    def getContext(cls,msg):
+        target=msg["target"]
+        cell=target.a # convention - the target is a control of the cell
+        row=cell.row
+        table=row.table
+        return cell,row,table,table.debugContainer 
+        
+
+    @classmethod
+    async def onClick(cls,msg):
+        _cell,row,table,debugContainer=cls.getContext(msg)
         print(msg)
         print(row.record)
-        debugContainer.addMessage(str(row.record))
+        if debugContainer is not None:
+            table.debugContainer.addMessage(str(row.record))
+            await msg.page.update()
 
+class EchoTwiceClick():
 
-class EchoTwiceButtonColumn(ButtonColumn):
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        print(msg)
-        print(row.record)
-        debugContainer.addMessage(str(row.record))
-        debugContainer.addMessage("Echoing in 5 seconds again")
-        await msg.page.update()
+    @classmethod
+    async def onClick(cls,msg):
+        _cell,_row,_table,debugContainer=EchoClick.getContext(msg)
+        await EchoClick.onClick(msg)
+        if debugContainer is not None:
+            debugContainer.addMessage("Echoing in 5 seconds again")
+            await msg.page.update()
         await asyncio.sleep(5)
-        debugContainer.addMessage(str(row.record))
-        await msg.page.update()
-
-
-class EchoTwiceInputDisabledButtonColumn(ButtonColumn):
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        print(msg)
-        print(row.record)
-        debugContainer.addMessage(str(row.record))
-        debugContainer.addMessage("Echoing in 5 seconds again")
-        row.disableInput(True)
-        await msg.page.update()
-        await asyncio.sleep(5)
-        debugContainer.addMessage(str(row.record))
-        row.disableInput(False)
-        await msg.page.update()
+        await EchoClick.onClick(msg)
 
 class JpTableDemo(App):
     '''
@@ -98,6 +130,16 @@ class JpTableDemo(App):
                 self.table2.updateCell(rowKey, "president",link)
         except Exception as ex:
             self.handleException(ex)
+            
+    def addButtonColumn(self,table,column,onClick):
+        '''
+        add a button column
+        '''
+        for row in table.rows:
+            cell=row.cellsMap[column]
+            cell.delete_components()
+            button=jp.Button(text=column,classes="btn btn-primary", a=cell,click=onClick)
+            cell.setControl(button)
             
     async def content(self):
         '''
@@ -203,15 +245,15 @@ class JpTableDemo(App):
         rowD=jp.Div(classes="row",a=self.contentbox)     
         colD1=jp.Div(classes="col-1",a=rowD)
         debugContainer = DebugOutput(a=rowB)
+        for record in lod:
+            record["echo"]=""
+            record["echo2"]=""
         self.table1 = Table(lod=lod,
                       allowInput=True,
                       a=rowA,
-                      debugContainer=debugContainer,
-                      actionColumns=[
-                          EchoButtonColumn(name="Echo"),
-                          EchoTwiceButtonColumn(name="EchoTwice"),
-                          EchoTwiceInputDisabledButtonColumn(name="EchoTwiceDisableInput")
-                      ])
+                      debugContainer=debugContainer)
+        self.addButtonColumn(self.table1,"echo",EchoClick.onClick)
+        self.addButtonColumn(self.table1,"echo2",EchoTwiceClick.onClick)
         plod=[
   {
     "nickNames": "American Fabius",
