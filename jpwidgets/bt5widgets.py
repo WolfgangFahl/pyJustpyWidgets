@@ -349,7 +349,6 @@ class Collapsible(jp.Div):
         '''
         super().__init__(**kwargs)
         self.label = label
-        self.bodyId = str(uuid.uuid1())
         self.btnClasses = "btn btn-secondary d-inline-flex align-items-center rounded"
         self.btn = None
         self.body = None
@@ -366,13 +365,13 @@ class Collapsible(jp.Div):
                                  text=self.label,
                                  classes=self.btnClasses,
                                  click=self.collapse)
-            self.body = jp.Div(a=self, classes="collapse show", name=self.bodyId)
+            self.body = jp.Div(a=self, classes="collapse show",)
         else:
             self.btn = jp.Button(a=self,
                                  text=self.label,
                                  classes=self.btnClasses,
                                  click=self.collapse)
-            self.body = jp.Div(a=self, classes="collapse", name=self.bodyId)
+            self.body = jp.Div(a=self, classes="collapse")
         if changeState:
             self.collapsed = not self.collapsed
 
