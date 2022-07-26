@@ -149,7 +149,7 @@ class App(object):
         selectorLabel.for_component=select
         return select
     
-    def createInput(self,text,placeholder,change,a,size:int=30):
+    def createInput(self,text,placeholder,change,a,size:int=30, **kwargs):
         '''
         create an input control with a label with the given text
         a placeholder text and a change onChange function having the parent a
@@ -162,7 +162,7 @@ class App(object):
             size(int). the size of the input
         '''
         inputLabel=jp.Label(text=text,a=a,classes="form-label label")
-        jpinput=jp.Input(a=a,classes="form-input",size=size,placeholder=placeholder)
+        jpinput=jp.Input(a=a,classes="form-input",size=size,placeholder=placeholder, **kwargs)
         jpinput.on('input', change)
         inputLabel.for_component=inputLabel
         return jpinput
@@ -357,8 +357,11 @@ class Collapsible(jp.Div):
         super().__init__(**kwargs)
         self.label = label
         self.btnClasses = "btn btn-secondary d-inline-flex align-items-center rounded"
-        self.btn = None
-        self.body = None
+        self.btn = jp.Button(a=self,
+                             inner_html=f"{self.CHEVRON_DOWN}\n{self.label}",
+                             classes=self.btnClasses,
+                             click=self.collapse)
+        self.body = jp.Div(a=self, classes="collapse")
         self.collapsed=collapsed
         self.collapse(changeState=False)
 
@@ -366,19 +369,12 @@ class Collapsible(jp.Div):
         """
         change state of Collapsible body
         """
-        self.delete_components()
         if self.collapsed:
-            self.btn = jp.Button(a=self,
-                                 inner_html=f"{self.CHEVRON_DOWN}\n{self.label}",
-                                 classes=self.btnClasses,
-                                 click=self.collapse)
-            self.body = jp.Div(a=self, classes="collapse show",)
+            self.btn.inner_html=f"{self.CHEVRON_DOWN}\n{self.label}"
+            self.body.classes="collapse show"
         else:
-            self.btn = jp.Button(a=self,
-                                 inner_html=f"{self.CHEVRON_RIGHT}\n{self.label}",
-                                 classes=self.btnClasses,
-                                 click=self.collapse)
-            self.body = jp.Div(a=self, classes="collapse")
+            self.btn.inner_html=f"{self.CHEVRON_RIGHT}\n{self.label}"
+            self.body.classes="collapse"
         if changeState:
             self.collapsed = not self.collapsed
 
