@@ -364,3 +364,35 @@ class Collapsible(jp.Div):
         else:
             self.body.set_class('visible')
             self.body.visibility_state = 'visible'
+            
+class DebugOutput(jp.Div):
+    """
+    shows debug messages
+    """
+
+    def __init__(self, **kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(**kwargs)
+        self.messages = []
+        self.collapsible = Collapsible("Log", a=self)
+
+    def react(self, _data):
+        '''
+        called on each event
+        '''
+        if self.collapsible:
+            self.collapsible.body.delete()
+        ul = jp.Ul(a=self.collapsible.body, classes="list-none")
+        for msg in reversed(self.messages):
+            jp.Li(a=ul, text=msg)
+
+    def addMessage(self, msg:str):
+        '''
+        add message
+        
+        Args:
+            msg(str): a message to add
+        '''
+        self.messages.append(msg)
