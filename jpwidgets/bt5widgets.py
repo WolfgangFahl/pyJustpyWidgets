@@ -7,6 +7,8 @@ Bootstrap5Widgets to be used with
 https://getbootstrap.com/docs/5.0/getting-started/introduction/
  
 '''
+import uuid
+
 import justpy as jp
 import os
 import socket
@@ -340,27 +342,45 @@ class Alert(jp.Div):
 class Collapsible(jp.Div):
     """
     Collapsible div
+    see https://getbootstrap.com/docs/4.0/components/collapse/
     """
-    button_classes = 'btn btn-primary'
 
-    def __init__(self, label:str, **kwargs):
+    def __init__(self, label:str, collapsed:bool=False, **kwargs):
         '''
         constructor
         '''
         super().__init__(**kwargs)
-        self.btn = jp.Button(a=self, text=label, classes=self.button_classes)
-        self.body = jp.Div(a=self)
-        self.body.visibility_state = "invisible"
-        self.btn.body=self.body
-        self.body.a = self
-        self.body.classes=''
-        self.on("click", self.toggle_visible)
+        self.label = label
+        self.bodyId = str(uuid.uuid1())
+        self.btnClasses = "btn btn-secondary d-inline-flex align-items-center rounded"
+        self.btn = None
+        self.body = None
+        self.collapsed=collapsed
+        self.collapse(changeState=False)
 
-    @staticmethod
-    def toggle_visible(self, _msg):
-        if self.body.visibility_state == 'visible':
-            self.body.set_class('invisible')
-            self.body.visibility_state = 'invisible'
+    def collapse(self, changeState:bool=True):
+        """
+        change state of Collapsible body
+        """
+        self.delete_components()
+        if self.collapsed:
+            self.btn = jp.Button(a=self,
+                                 text=self.label,
+                                 classes=self.btnClasses,
+                                 click=self.collapse)
+            self.body = jp.Div(a=self, classes="collapse show", name=self.bodyId)
         else:
-            self.body.set_class('visible')
-            self.body.visibility_state = 'visible'
+            self.btn = jp.Button(a=self,
+                                 text=self.label,
+                                 classes=self.btnClasses,
+                                 click=self.collapse)
+            self.body = jp.Div(a=self, classes="collapse", name=self.bodyId)
+        if changeState:
+            self.collapsed = not self.collapsed
+
+    def setCollapseState(self, collapsed:bool):
+        """
+        set the collapse state to the given state
+        """
+        self.collapsed = collapsed
+        self.collapse(changeState=False)
