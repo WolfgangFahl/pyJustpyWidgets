@@ -133,7 +133,7 @@ class App(object):
         errorMsgHtml=f"{errorMsg}<pre>{trace}</pre>"
         self.errors.inner_html=errorMsgHtml
         
-    def createSelect(self,text,value,change,a):
+    def createSelect(self,text,value,change,a,**kwargs):
         '''
         create a select control with a label with the given text, the default value
         and a change onChange function having the parent a
@@ -145,7 +145,7 @@ class App(object):
             a(object): the parent component of the Select control
         '''
         selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
-        select=jp.Select(a=a,classes="form-select",value=value,change=change)
+        select=jp.Select(a=a,classes="form-select",value=value,change=change,**kwargs)
         selectorLabel.for_component=select
         return select
     
@@ -218,7 +218,7 @@ class Link:
     a link
     '''
     @staticmethod
-    def create(url,text,tooltip=None):
+    def create(url,text,tooltip=None,target=None):
         '''
         create a link for the given url and text
         
@@ -228,7 +228,8 @@ class Link:
             tooltip(str): an optional tooltip
         '''
         title="" if tooltip is None else f" title='{tooltip}'"
-        link=f"<a href='{url}{title}'>{text}</a>"
+        target="" if target is None else f" target=' {target}'"
+        link=f"<a href='{url}'{title}{target}>{text}</a>"
         return link
 
              
