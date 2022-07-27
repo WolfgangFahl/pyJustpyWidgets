@@ -20,19 +20,21 @@ class App(object):
     a Justpy App
     '''
 
-    def __init__(self,version,title:str=None):
+    def __init__(self,version,title:str=None,websockets=True):
         '''
         Constructor
         
         Args:
             version(Version): Version info
             title(str): optional title - if None use Version.description
+            websockets(bool): if True use websockets(default)
         '''
         self.version=version
         if title is None:
             title=version.description
         self.title=title
         self.menu=""
+        self.websockets=websockets
         
     def mainInstance(self,argv=None,callback=None): # IGNORE:C0111
         '''main program.'''
@@ -114,7 +116,7 @@ class App(object):
         '''
         start the reactive justpy webserver
         '''
-        jp.justpy(callback,host=self.host,port=self.port)
+        jp.justpy(callback,host=self.host,port=self.port,websockets=self.websockets)
         
     def handleException(self,ex):
         '''
