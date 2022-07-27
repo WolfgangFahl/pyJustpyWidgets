@@ -94,8 +94,32 @@ class TableRow(jp.Tr):
         if column in self.cellsMap:
             cell=self.cellsMap[column]
             cell.setValue(value)
+            
+    def getCell(self,column:str):
+        '''
+        get the cell at the given column
+        
+        Args:
+            column(str): the key for the column
+            
+        Returns:
+            TableData: the cell or None if the column does not exist
+        '''
+        cell=None
+        if column in self.cellsMap:
+            cell=self.cellsMap[column]
+        return cell
         
     def getCellValue(self,column:str)->object:
+        '''
+        get the cell value at the given column
+        
+        Args:
+            column(str): the key for the column
+            
+        Returns:
+            object: the value of the cell or None if the column does not exist
+        '''
         value=None
         if column in self.cellsMap:
             cell=self.cellsMap[column]
