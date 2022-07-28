@@ -362,9 +362,9 @@ class Collapsible(jp.Div):
                              inner_html=f"{self.CHEVRON_DOWN}\n{self.label}",
                              classes=self.btnClasses,
                              click=self.collapse)
-        self.body = jp.Div(a=self, classes="collapse")
+        self.body = jp.Div(a=self, classes="collapse show")
         self.collapsed=collapsed
-        self.collapse(changeState=False)
+        self.collapse(changeState=True)
 
     def collapse(self, changeState:bool=True):
         """
