@@ -30,42 +30,7 @@ class Version(object):
 {description}
 
   Created by {authors} on {date} last updated {updated}"""
-  
-class ButtonColumn:
-    '''
-    a button column
-    '''
-
-    def __init__(self, name:str):
-        self.name = name
-        self.tdClass: type = TableDataButton
-
-    def getTableData(self, a, row:TableRow) -> TableData:
-        tabledata = self.tdClass(a=a, text=self.name, row=row, btnCol=self)
-        return tabledata
-
-
-    async def buttonFunctionOnClick(self, row:TableRow, debugContainer:DebugOutput, msg):
-        return NotImplemented
-
-
-class TableDataButton(jp.Td):
-
-    btn_classes = "btn btn-primary"
-
-    def __init__(self, text:str, row:TableRow, btnCol:ButtonColumn, **kwargs):
-        super().__init__(**kwargs)
-        self.btn = jp.Button(a=self, text=text, click=self.on_button_click, classes=self.btn_classes)
-        self.btn.row = row
-        self.btn.actionCol = btnCol
-
-    @staticmethod
-    async def on_button_click(self, msg):
-        print(msg)
-        debugContainer = self.row.a.a.a.debugContainer
-        if getattr(self, "actionCol"):
-            await self.actionCol.buttonFunctionOnClick(self.row, debugContainer, msg)
-  
+    
 class EchoClick():
     
     @classmethod
@@ -74,8 +39,7 @@ class EchoClick():
         cell=target.a # convention - the target is a control of the cell
         row=cell.row
         table=row.table
-        return cell,row,table,table.debugContainer 
-        
+        return cell,row,table,table.debugContainer
 
     @classmethod
     async def onClick(cls,msg):
@@ -136,7 +100,7 @@ class JpTableDemo(App):
         add a button column
         '''
         for row in table.rows:
-            cell=row.cellsMap[column]
+            cell=row.getCell(column)
             cell.delete_components()
             button=jp.Button(text=column,classes="btn btn-primary", a=cell,click=onClick)
             cell.setControl(button)
