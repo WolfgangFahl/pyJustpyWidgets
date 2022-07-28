@@ -344,27 +344,25 @@ class Collapsible(jp.Div):
     """
     Collapsible div
     see https://getbootstrap.com/docs/4.0/components/collapse/
-    """
-    CHEVRON_DOWN = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-</svg>"""
 
-    CHEVRON_RIGHT = """<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-</svg>"""
+    use the body attribute to assign contents to the collapsible body
+    """
 
     def __init__(self, label:str, collapsed:bool=False, **kwargs):
         '''
         constructor
         '''
-        super().__init__(**kwargs)
+        super().__init__(classes="accordion", **kwargs)
+        self.div = jp.Div(a=self, classes="accordion-item")
         self.label = label
-        self.btnClasses = "btn btn-secondary d-inline-flex align-items-center rounded"
-        self.btn = jp.Button(a=self,
-                             inner_html=f"{self.CHEVRON_DOWN}\n{self.label}",
+        self.btnClasses = "accordion-button"
+        self.bodyClasses = "accordion-collapse"
+        self.btn = jp.Button(a=self.div,
+                             inner_html=self.label,
                              classes=self.btnClasses,
                              click=self.collapse)
-        self.body = jp.Div(a=self, classes="collapse show")
+        self.collapsibleDiv = jp.Div(a=self.div, classes=f"{self.bodyClasses} collapse show")
+        self.body = jp.Div(a=self.collapsibleDiv, classes=f"accordion-body collapse show")
         self.collapsed=collapsed
         self.collapse(changeState=True)
 
@@ -373,11 +371,11 @@ class Collapsible(jp.Div):
         change state of Collapsible body
         """
         if self.collapsed:
-            self.btn.inner_html=f"{self.CHEVRON_DOWN}\n{self.label}"
-            self.body.classes="collapse show"
+            self.btn.classes = f"{self.btnClasses}"
+            self.collapsibleDiv.classes=f"{self.bodyClasses} collapse show"
         else:
-            self.btn.inner_html=f"{self.CHEVRON_RIGHT}\n{self.label}"
-            self.body.classes="collapse"
+            self.btn.classes = f"{self.btnClasses} collapsed"
+            self.collapsibleDiv.classes = f"{self.bodyClasses} collapse"
         if changeState:
             self.collapsed = not self.collapsed
 
