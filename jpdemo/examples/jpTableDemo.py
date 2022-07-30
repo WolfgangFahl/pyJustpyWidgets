@@ -208,7 +208,7 @@ class JpTableDemo(App):
         rowC=jp.Div(classes="row",a=self.contentbox)  
         rowD=jp.Div(classes="row",a=self.contentbox)     
         colD1=jp.Div(classes="col-1",a=rowD)
-        debugContainer = DebugOutput(a=rowB)
+        debugContainer = DebugOutput(a=rowB, classes="col-4")
         for record in lod:
             record["echo"]=""
             record["echo2"]=""
