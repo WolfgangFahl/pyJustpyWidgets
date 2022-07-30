@@ -33,7 +33,7 @@ class App(object):
         if title is None:
             title=version.description
         self.title=title
-        self.menu=""
+        self.menu={}
         self.websockets=websockets
         
     def mainInstance(self,argv=None,callback=None): # IGNORE:C0111
@@ -60,8 +60,6 @@ class App(object):
         parser.add_argument('-V', '--version', action='version', version=self.version.longDescription)
         return parser
     
-    def getMenu(self):
-        return self.menu
     
     def pageHtml(self,level):
         '''
@@ -84,10 +82,13 @@ class App(object):
         elif level=="body":
             html="""<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>"""
         elif level == "container":
+            menuHtml=""
+            for menuEntry in self.menu.values():
+                menuHtml+=menuEntry.asHtml()
             html=f"""<div name='containerbox'>
         <!--  common menu -->
 <div name='headerbox' id='headerbox'>
-{self.menu}
+{menuHtml}
 </div>
         <div name="navigationbox" id="navigationbox" title="{self.title}">{self.title}</div>
         <div name="contentbox" class="container-fluid" id="contentbox">
@@ -199,22 +200,38 @@ class App(object):
             sys.stderr.write(indent + "  for help use --help")
             return 2
         
-    def addMenuLink(self,text,icon,href):
+    def addMenuLink(self,text,icon,href,target=None):
         '''
          add a menu entry
          
          text(str)
          icon(str): see https://materialdesignicons.com/ for possible icons
          href(str): the link
+         target(str): "_blank" or None
         '''
-        self.menu+=f"""
-  <!-- {text} --><a
-    href='{href}'
-    title='{text}'>
-    <i class='mdi mdi-{icon} headerboxicon'></i>
-  </a>
-"""        
+        self.menu[text]=MenuEntry(text,icon,href,target)
 
+class MenuEntry:
+    '''
+    a menu entry
+    '''
+    def __init__(self,text,icon,href,target):
+        self.text=text
+        self.icon=icon
+        self.href=href
+        self.target=target
+        
+    def asHtml(self):
+        target="" if self.target is None else f" target=' {self.target}'"
+        html=f"""
+  <!-- {self.text} --><a
+    href='{self.href}'
+    title='{self.text}'{target}>
+    <i class='mdi mdi-{self.icon} headerboxicon'></i>
+  </a>
+"""   
+        return html     
+        
 class Link:
     '''
     a link
