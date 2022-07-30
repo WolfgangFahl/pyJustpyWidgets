@@ -360,7 +360,7 @@ class Alert(jp.Div):
 class Collapsible(jp.Div):
     """
     Collapsible div
-    see https://getbootstrap.com/docs/4.0/components/collapse/
+    see https://getbootstrap.com/docs/5.0/components/accordion/
 
     use the body attribute to assign contents to the collapsible body
     """
