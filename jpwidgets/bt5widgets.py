@@ -147,9 +147,17 @@ class App(object):
             change(func): an onChange function
             a(object): the parent component of the Select control
         '''
-        selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
-        select=jp.Select(a=a,classes="form-select",value=value,change=change,**kwargs)
-        selectorLabel.for_component=select
+        # 
+        # https://getbootstrap.com/docs/4.0/components/input-group/
+        #<div class="input-group-prepend">
+        #<span class="input-group-text" id="">First and last name</span>
+        #</div>
+        #selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
+        selectorGroup=jp.Div(a=a,classes="input-group")
+        selectorGroupPrepend=jp.Div(a=selectorGroup,classes="input-group-prepend")
+        _selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
+        select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
+        #selectorLabel.for_component=select
         return select
     
     def createInput(self,text,placeholder,change,a,size:int=30, **kwargs):
