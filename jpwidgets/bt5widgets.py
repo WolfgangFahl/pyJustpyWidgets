@@ -137,6 +137,12 @@ class App(object):
         errorMsgHtml=f"{errorMsg}<pre>{trace}</pre>"
         self.errors.inner_html=errorMsgHtml
         
+    def clearErrors(self):
+        '''
+        clear the Error area
+        '''
+        self.errors.inner_html=""
+        
     def createSelectorGroupWithLabel(self,a,text:str):
         '''
         create a selector Group with the given label
@@ -172,22 +178,22 @@ class App(object):
         comboBox=ComboBox(a=selectorGroup,**kwargs)
         return comboBox
     
-    def createInput(self,text,placeholder,change,a,size:int=30, **kwargs):
+    def createInput(self,labelText,placeholder,change,a,size:int=30, **kwargs):
         '''
         create an input control with a label with the given text
         a placeholder text and a change onChange function having the parent a
         
         Args:
-            text(str): the text for the label
+            labelText(str): the text for the label
             placeholder(str): a placeholder value
             change(func): an onChange function
             a(object): the parent component of the Select control
             size(int). the size of the input
         '''
-        inputLabel=jp.Label(text=text,a=a,classes="form-label label")
-        jpinput=jp.Input(a=a,classes="form-input",size=size,placeholder=placeholder, **kwargs)
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        jpinput=jp.Input(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
         jpinput.on('input', change)
-        inputLabel.for_component=inputLabel
+        selectorLabel.for_component=jpinput
         return jpinput
         
     def cmdLine(self,argv,callback):
@@ -285,6 +291,8 @@ class DataList(jp.Div):
         cls = JustpyBaseComponent
         self.id = cls.next_id
         
+    def addOption(self,text,value):
+        self.inner_html+=f"""<option value="{value}">{text}</option>"""
                  
 class ComboBox(jp.Input):
     '''
