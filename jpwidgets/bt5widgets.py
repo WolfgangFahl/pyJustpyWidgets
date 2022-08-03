@@ -14,6 +14,7 @@ import sys
 import traceback
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
+from justpy.htmlcomponents import JustpyBaseComponent
 
 class App(object):
     '''
@@ -136,16 +137,9 @@ class App(object):
         errorMsgHtml=f"{errorMsg}<pre>{trace}</pre>"
         self.errors.inner_html=errorMsgHtml
         
-    def createSelect(self,text,value,change,a,**kwargs):
+    def createSelectorGroupWithLabel(self,a,text:str):
         '''
-        create a select control with a label with the given text, the default value
-        and a change onChange function having the parent a
-        
-        Args:
-            text(str): the text for the label
-            value(str): the selected value
-            change(func): an onChange function
-            a(object): the parent component of the Select control
+        create a selector Group with the given label
         '''
         # 
         # https://getbootstrap.com/docs/4.0/components/input-group/
@@ -155,10 +149,28 @@ class App(object):
         #selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
         selectorGroup=jp.Div(a=a,classes="input-group")
         selectorGroupPrepend=jp.Div(a=selectorGroup,classes="input-group-prepend")
-        _selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
+        selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
+        return selectorGroup,selectorLabel
+        
+    def createSelect(self,labelText,value,change,a,**kwargs):
+        '''
+        create a select control with a label with the given text, the default value
+        and a change onChange function having the parent a
+        
+        Args:
+            labelText(str): the text for the label
+            value(str): the selected value
+            change(func): an onChange function
+            a(object): the parent component of the Select control
+        '''
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
         select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
-        #selectorLabel.for_component=select
         return select
+    
+    def createComboBox(self,labelText,a,**kwargs):
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        comboBox=ComboBox(a=selectorGroup,**kwargs)
+        return comboBox
     
     def createInput(self,text,placeholder,change,a,size:int=30, **kwargs):
         '''
@@ -259,7 +271,21 @@ class Link:
         link=f"<a href='{url}'{title}{target}>{text}</a>"
         return link
 
-             
+class DataList(jp.Div):
+    '''
+    a DataList
+    '''
+    html_tag = 'datalist'
+    
+    def __init__(self,**kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(**kwargs)
+        cls = JustpyBaseComponent
+        self.id = cls.next_id
+        
+                 
 class ComboBox(jp.Input):
     '''
     combo box with attached datalist
@@ -270,13 +296,9 @@ class ComboBox(jp.Input):
         constructor
         '''
         super().__init__(**kwargs)
-        self.clearOptions()
-        
-    def clearOptions(self):
-        self.datalist=[]
-        
-    def addOption(self,option):
-        self.datalist.append(option)
+        self.attributes.append("list")
+        self.dataList=DataList(a=self)
+        self.list=self.dataList.id
 
 
 class ProgressBar(jp.Div):
