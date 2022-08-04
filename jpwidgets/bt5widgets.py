@@ -16,6 +16,7 @@ import sys
 import traceback
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
+from justpy.htmlcomponents import JustpyBaseComponent
 
 class App(object):
     '''
@@ -35,7 +36,7 @@ class App(object):
         if title is None:
             title=version.description
         self.title=title
-        self.menu=""
+        self.menu={}
         self.websockets=websockets
         
     def mainInstance(self,argv=None,callback=None): # IGNORE:C0111
@@ -62,8 +63,6 @@ class App(object):
         parser.add_argument('-V', '--version', action='version', version=self.version.longDescription)
         return parser
     
-    def getMenu(self):
-        return self.menu
     
     def pageHtml(self,level):
         '''
@@ -86,10 +85,13 @@ class App(object):
         elif level=="body":
             html="""<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>"""
         elif level == "container":
+            menuHtml=""
+            for menuEntry in self.menu.values():
+                menuHtml+=menuEntry.asHtml()
             html=f"""<div name='containerbox'>
         <!--  common menu -->
 <div name='headerbox' id='headerbox'>
-{self.menu}
+{menuHtml}
 </div>
         <div name="navigationbox" id="navigationbox" title="{self.title}">{self.title}</div>
         <div name="contentbox" class="container-fluid" id="contentbox">
@@ -137,38 +139,63 @@ class App(object):
         errorMsgHtml=f"{errorMsg}<pre>{trace}</pre>"
         self.errors.inner_html=errorMsgHtml
         
-    def createSelect(self,text,value,change,a,**kwargs):
+    def clearErrors(self):
+        '''
+        clear the Error area
+        '''
+        self.errors.inner_html=""
+        
+    def createSelectorGroupWithLabel(self,a,text:str):
+        '''
+        create a selector Group with the given label
+        '''
+        # 
+        # https://getbootstrap.com/docs/4.0/components/input-group/
+        #<div class="input-group-prepend">
+        #<span class="input-group-text" id="">First and last name</span>
+        #</div>
+        #selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
+        selectorGroup=jp.Div(a=a,classes="input-group")
+        selectorGroupPrepend=jp.Div(a=selectorGroup,classes="input-group-prepend")
+        selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
+        return selectorGroup,selectorLabel
+        
+    def createSelect(self,labelText,value,change,a,**kwargs):
         '''
         create a select control with a label with the given text, the default value
         and a change onChange function having the parent a
         
         Args:
-            text(str): the text for the label
+            labelText(str): the text for the label
             value(str): the selected value
             change(func): an onChange function
             a(object): the parent component of the Select control
         '''
-        selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
-        select=jp.Select(a=a,classes="form-select",value=value,change=change,**kwargs)
-        selectorLabel.for_component=select
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
         return select
     
-    def createInput(self,text,placeholder,change,a,size:int=30, **kwargs):
+    def createComboBox(self,labelText,a,**kwargs):
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        comboBox=ComboBox(a=selectorGroup,**kwargs)
+        return comboBox
+    
+    def createInput(self,labelText,placeholder,change,a,size:int=30, **kwargs):
         '''
         create an input control with a label with the given text
         a placeholder text and a change onChange function having the parent a
         
         Args:
-            text(str): the text for the label
+            labelText(str): the text for the label
             placeholder(str): a placeholder value
             change(func): an onChange function
             a(object): the parent component of the Select control
             size(int). the size of the input
         '''
-        inputLabel=jp.Label(text=text,a=a,classes="form-label label")
-        jpinput=jp.Input(a=a,classes="form-input",size=size,placeholder=placeholder, **kwargs)
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        jpinput=jp.Input(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
         jpinput.on('input', change)
-        inputLabel.for_component=inputLabel
+        selectorLabel.for_component=jpinput
         return jpinput
         
     def cmdLine(self,argv,callback):
@@ -201,22 +228,38 @@ class App(object):
             sys.stderr.write(indent + "  for help use --help")
             return 2
         
-    def addMenuLink(self,text,icon,href):
+    def addMenuLink(self,text,icon,href,target=None):
         '''
          add a menu entry
          
          text(str)
          icon(str): see https://materialdesignicons.com/ for possible icons
          href(str): the link
+         target(str): "_blank" or None
         '''
-        self.menu+=f"""
-  <!-- {text} --><a
-    href='{href}'
-    title='{text}'>
-    <i class='mdi mdi-{icon} headerboxicon'></i>
-  </a>
-"""        
+        self.menu[text]=MenuEntry(text,icon,href,target)
 
+class MenuEntry:
+    '''
+    a menu entry
+    '''
+    def __init__(self,text,icon,href,target):
+        self.text=text
+        self.icon=icon
+        self.href=href
+        self.target=target
+        
+    def asHtml(self):
+        target="" if self.target is None else f" target=' {self.target}'"
+        html=f"""
+  <!-- {self.text} --><a
+    href='{self.href}'
+    title='{self.text}'{target}>
+    <i class='mdi mdi-{self.icon} headerboxicon'></i>
+  </a>
+"""   
+        return html     
+        
 class Link:
     '''
     a link
@@ -236,7 +279,23 @@ class Link:
         link=f"<a href='{url}'{title}{target}>{text}</a>"
         return link
 
-             
+class DataList(jp.Div):
+    '''
+    a DataList
+    '''
+    html_tag = 'datalist'
+    
+    def __init__(self,**kwargs):
+        '''
+        constructor
+        '''
+        super().__init__(**kwargs)
+        cls = JustpyBaseComponent
+        self.id = cls.next_id
+        
+    def addOption(self,text,value):
+        self.inner_html+=f"""<option value="{value}">{text}</option>"""
+                 
 class ComboBox(jp.Input):
     '''
     combo box with attached datalist
@@ -247,13 +306,9 @@ class ComboBox(jp.Input):
         constructor
         '''
         super().__init__(**kwargs)
-        self.clearOptions()
-        
-    def clearOptions(self):
-        self.datalist=[]
-        
-    def addOption(self,option):
-        self.datalist.append(option)
+        self.attributes.append("list")
+        self.dataList=DataList(a=self)
+        self.list=self.dataList.id
 
 
 class ProgressBar(jp.Div):
@@ -357,7 +412,7 @@ class Alert(jp.Div):
 class Collapsible(jp.Div):
     """
     Collapsible div
-    see https://getbootstrap.com/docs/4.0/components/collapse/
+    see https://getbootstrap.com/docs/5.0/components/accordion/
 
     use the body attribute to assign contents to the collapsible body
     """

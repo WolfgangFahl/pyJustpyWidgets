@@ -10,7 +10,7 @@ class Table(jp.Div):
     t_classes = "table-auto"
     tr_even_classes = ''
     tr_odd_classes = ''
-    th_classes = ''
+    th_classes = 'text-center'
     thead_classes=''
 
     def __init__(self, lod:List[dict],headerMap=None,primaryKey:str=None,allowInput:bool=True,debugContainer=None,**kwargs):
@@ -41,7 +41,8 @@ class Table(jp.Div):
             thead = jp.Thead(a=self.table, classes=self.thead_classes)
             tr = jp.Tr(a=thead)
             for _column,header in headerMap.items():
-                jp.Th(text=header, classes=self.th_classes, a=tr)    
+                th=jp.Th(text="", classes=self.th_classes, a=tr)  
+                th.inner_html=header  
             tbody = jp.Tbody(a=self.table)
             for _i, row in enumerate(self.lod):
                 tableRow=TableRow(table=self,a=tbody, record=row, headerMap=headerMap)
