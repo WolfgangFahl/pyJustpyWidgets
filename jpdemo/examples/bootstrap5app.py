@@ -113,28 +113,35 @@ class ShowBootstrap5Widgets(jp.Div):
         self.button = jp.Button(a=self, text="Press to progress", classes="btn btn-primary")
         self.button.on("click", self.progress_demo)
         self.progress_count = 0
-        self.progressGrid = jp.Div(a=self, classes="d-grid gap-3")
+        self.progressGrid = jp.Div(a=self, classes="d-grid gap-4")
         self.progressDivs = [jp.Div(a=self.progressGrid, classes="p-2 d-flex justify-content-center"),
+                             jp.Div(a=self.progressGrid, classes="p-2"),
                              jp.Div(a=self.progressGrid, classes="p-2"),
                              jp.Div(a=self.progressGrid, classes="p-2"),]
         self.spinner = Spinner(a=self.progressDivs[0])
         self.progressBar = ProgressBar(a=self.progressDivs[1])
         self.progressBarAnimated = ProgressBar(a=self.progressDivs[2], animated=True)
+        self.progressBarWithKillSwitch = ProgressBar(a=self.progressDivs[3], withKillSwitch=True)
+        self.progressBarWithKillSwitch.onStop(callback=self.stop_progress)
+
+    def stop_progress(self, msg):
+        """
+        stop the progress
+        """
+        self.progressBarWithKillSwitch.updateProgress(0)
+        Alert(a=self, text="Process was stopped!!!")
 
     def progress_demo(self, msg):
         """
         update progress bars of the demo
         """
-        if self.progress_count < 100:
-            value=18
-            self.progress_count += value
-            self.progressBar.incrementProgress(value)
-            self.progressBarAnimated.incrementProgress(value)
-        if self.progress_count >= 100:
-            Alert(a=self, text="Demo process completed!!!  → resetting demo...")
-            self.progress_count = 0
-            self.progressBar.updateProgress(self.progress_count)
-            self.progressBarAnimated.updateProgress(self.progress_count)
+        value = 18
+        for progressBar in [self.progressBar, self.progressBarAnimated, self.progressBarWithKillSwitch]:
+            if progressBar.value < 100:
+                progressBar.incrementProgress(value)
+            if progressBar.value >= 100:
+                Alert(a=self, text="Demo process completed!!!  → resetting demo...")
+                progressBar.updateProgress(0)
 
     
 DEBUG = 1

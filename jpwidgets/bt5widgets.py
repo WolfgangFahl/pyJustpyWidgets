@@ -7,6 +7,8 @@ Bootstrap5Widgets to be used with
 https://getbootstrap.com/docs/5.0/getting-started/introduction/
  
 '''
+from typing import Callable
+
 import justpy as jp
 import os
 import socket
@@ -260,14 +262,26 @@ class ProgressBar(jp.Div):
     see https://getbootstrap.com/docs/5.0/components/progress/
     """
 
-    def __init__(self, animated:bool=False, **kwargs):
+    def __init__(self, animated:bool=False, withKillSwitch:bool=False, **kwargs):
         '''
         constructor
         '''
-        super().__init__(classes="progress", **kwargs)
+        super().__init__(classes="row align-items-center", **kwargs)
+        if withKillSwitch:
+            self.stopButton:jp.Button = jp.Button(a=self, text="Stop", classes="btn btn-danger col-1")
+        colClass = "col-11" if withKillSwitch else "col-12"
+        self.progressContainer = jp.Div(a=self, classes=colClass)
+        self.progressDiv = jp.Div(a=self.progressContainer, classes="progress")
         self.animated = animated
         self.value = 0
         self.bar = self.getBar()
+
+    def onStop(self, *, callback:Callable):
+        """
+        Callback for the kill switch / stop button
+        """
+        if getattr(self, "stopButton") is not None and isinstance(self.stopButton, jp.Button):
+            self.stopButton.on("click", callback)
 
     def getBar(self):
         """
@@ -282,7 +296,7 @@ class ProgressBar(jp.Div):
             "aria-valuenow": self.value,
             "style":f"width: {self.value}%"
         }
-        return jp.Div(a=self, classes=classes, **valueProps)
+        return jp.Div(a=self.progressDiv, classes=classes, **valueProps)
 
     def updateProgress(self, value:int=1):
         """
@@ -290,7 +304,7 @@ class ProgressBar(jp.Div):
         """
         if value >=0 and value <= 100:
             self.value = value
-            self.delete_components()
+            self.progressDiv.delete_components()
             self.bar = self.getBar()
 
     def incrementProgress(self, value: int):
