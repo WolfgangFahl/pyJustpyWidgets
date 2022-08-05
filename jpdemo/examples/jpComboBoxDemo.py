@@ -5,7 +5,7 @@ Created on 2022-08-03
 '''
 import justpy as jp
 import sys
-from jpwidgets.bt5widgets import App, ComboBox
+from jpwidgets.bt5widgets import Alert, App, ComboBox,IconButton
 import urllib.request, json 
 
 class Version(object):
@@ -54,6 +54,13 @@ class JpComboBoxDemo(App):
             jsonText=url.read().decode()
             countries = json.loads(jsonText)
         return countries
+    
+    async def onIconButtonClick(self,msg):
+        try:
+            parent=self.colB1
+            _alert=Alert(a=parent, text="Icon button was clicked!")
+        except Exception as ex:
+            self.handleException(ex)
         
     async def content(self):
         '''
@@ -65,10 +72,13 @@ class JpComboBoxDemo(App):
         self.colA1=jp.Div(classes="col-3",a=rowA)
         self.colA2=jp.Div(classes="col-3",a=rowA)
         self.colA3=jp.Div(classes="col-6",a=rowA)
+        rowB=jp.Div(classes="row",a=self.contentbox)
+        self.colB1=jp.Div(classes="col-3",a=rowB)
         comboBox=self.createComboBox(labelText="Country",a=self.colA1,placeholder="Please enter a country")
         for country in self.getCountries():
             comboBox.dataList.add(jp.Option(value=country["alpha2"],text=country["name"]))
             print(country)
+        _iconButton=IconButton(iconName="download",a=self.colB1,classes="btn-primary btn-sm",click=self.onIconButtonClick)
         return wp
        
 DEBUG = 1

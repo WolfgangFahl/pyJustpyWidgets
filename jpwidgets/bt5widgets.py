@@ -369,6 +369,17 @@ class ProgressBar(jp.Div):
         self.updateProgress(min(100, self.value + value))
 
 
+class IconButton(jp.Button):
+    '''
+    a button with an icon
+     see https://www.w3schools.com/howto/howto_css_icon_buttons.asp 
+    '''
+    def __init__(self,iconName,**kwargs):
+        classes = "btn"
+        kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
+        super().__init__(**kwargs)
+        self.icon=jp.I(a=self,classes=f'mdi mdi-{iconName} headerboxicon')     
+
 class Spinner(jp.Div):
     """
     bootstrap5 spinner
