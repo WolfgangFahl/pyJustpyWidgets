@@ -145,7 +145,7 @@ class App(object):
         '''
         self.errors.inner_html=""
         
-    def createSelectorGroupWithLabel(self,a,text:str):
+    def createSelectorGroupWithLabel(self,a,text:str,classes=""):
         '''
         create a selector Group with the given label
         '''
@@ -155,12 +155,12 @@ class App(object):
         #<span class="input-group-text" id="">First and last name</span>
         #</div>
         #selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
-        selectorGroup=jp.Div(a=a,classes="input-group")
+        selectorGroup=jp.Div(a=a,classes=f"input-group {classes}")
         selectorGroupPrepend=jp.Div(a=selectorGroup,classes="input-group-prepend")
         selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
         return selectorGroup,selectorLabel
         
-    def createSelect(self,labelText,value,change,a,**kwargs):
+    def createSelect(self,labelText,value,change,a,groupClasses="",**kwargs):
         '''
         create a select control with a label with the given text, the default value
         and a change onChange function having the parent a
@@ -171,16 +171,16 @@ class App(object):
             change(func): an onChange function
             a(object): the parent component of the Select control
         '''
-        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
         select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
         return select
     
-    def createComboBox(self,labelText,a,**kwargs):
-        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+    def createComboBox(self,labelText,a,groupClasses="",**kwargs):
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
         comboBox=ComboBox(a=selectorGroup,**kwargs)
         return comboBox
     
-    def createInput(self,labelText,placeholder,change,a,size:int=30, **kwargs):
+    def createInput(self,labelText,placeholder,change,a,size:int=30,groupClasses="",**kwargs):
         '''
         create an input control with a label with the given text
         a placeholder text and a change onChange function having the parent a
@@ -192,7 +192,7 @@ class App(object):
             a(object): the parent component of the Select control
             size(int). the size of the input
         '''
-        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
         jpinput=jp.Input(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
         jpinput.on('input', change)
         selectorLabel.for_component=jpinput
