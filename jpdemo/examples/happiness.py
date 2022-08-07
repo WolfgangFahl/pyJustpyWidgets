@@ -1,7 +1,4 @@
 # https://raw.githubusercontent.com/elimintz/justpy/master/examples/happiness.py
-import argparse
-import socket
-
 import justpy as jp
 import pandas as pd
 import numpy as np
@@ -142,9 +139,7 @@ def corr_stag_test():
     wp.d = jp.Div(a=wp, classes='flex flex-wrap')
     return(wp)
 
-parser = argparse.ArgumentParser(description='blackjack demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(happiness_plot,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('happiness demo',happiness_plot)
+
 

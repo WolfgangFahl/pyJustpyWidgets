@@ -1,6 +1,4 @@
 # https://raw.githubusercontent.com/elimintz/justpy/master/examples/iris.py
-import argparse
-import socket
 import justpy as jp
 import pandas as pd
 
@@ -79,8 +77,5 @@ def iris_data():
     iris_stats.jp.ag_grid(a=wp, classes='m-2 p-2 border', style='height: 500px; width: 950px', auto_size=True, theme='ag-theme-material')
     return wp
 
-parser = argparse.ArgumentParser(description='blackjack demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(iris_data, HIGHCHARTS=True, AGGRID=True,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('iris demo',iris_data, HIGHCHARTS=True, AGGRID=True)

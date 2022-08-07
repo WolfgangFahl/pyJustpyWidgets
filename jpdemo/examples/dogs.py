@@ -1,7 +1,5 @@
 # see https://raw.githubusercontent.com/elimintz/justpy/master/examples/dogs.py
 from justpy import *
-import argparse
-import socket
 # https://dog.ceo/api/breeds/list/all    dict of all breeds under
 
 breeds = ['affenpinscher', 'african', 'airedale', 'akita', 'appenzeller', 'basenji', 'beagle', 'bluetick',
@@ -132,8 +130,5 @@ async def dog_test(request):
     await change_pic(main_image, {})
     return wp
 
-parser = argparse.ArgumentParser(description='blackjack demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-justpy(dog_test, websockets=True,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('dogs demo',dog_test)

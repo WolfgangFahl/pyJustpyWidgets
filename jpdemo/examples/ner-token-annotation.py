@@ -1,5 +1,3 @@
-import argparse
-import socket
 import justpy as jp
 import sys
 try:
@@ -50,11 +48,6 @@ def ner_demo():
 if not _has_spacy:
     print("Please install spacy inorder to run this example and ensure that the model en_core_web_sm is downloaded ($python -m spacy download en_core_web_sm ) ")
     sys.exit(0)
-parser = argparse.ArgumentParser(description='blackjack demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8500)
-args = parser.parse_args()
-jp.justpy(ner_demo, host=args.host,port=args.port)
-
-if __name__ == '__main__':
-        pass
+    
+from  jpdemo.examples.basedemo import Demo
+Demo('Spacy NER token demo',ner_demo)
