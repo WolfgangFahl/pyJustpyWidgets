@@ -210,6 +210,21 @@ class App(object):
         jpinput.on('input', change)
         selectorLabel.for_component=jpinput
         return jpinput
+    
+    def createCheckbox(self,labelText,a,groupClasses="",**kwargs):
+        '''
+        create an checkBox control with a label with the given text
+        having the parent a
+        
+        Args:
+            labelText(str): the text for the label
+            a(object): the parent component of the Select control
+            size(int). the size of the input
+        '''
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
+        jpinput=jp.Input(a=selectorGroup,type="checkbox",classes="form-check-input", **kwargs)
+        selectorLabel.for_component=jpinput
+        return jpinput
         
     def cmdLine(self,argv,callback):
         '''
