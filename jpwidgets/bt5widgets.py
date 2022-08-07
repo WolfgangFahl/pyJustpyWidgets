@@ -175,10 +175,23 @@ class App(object):
         select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
         return select
     
-    def createComboBox(self,labelText,a,groupClasses="",**kwargs):
-        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
-        comboBox=ComboBox(a=selectorGroup,**kwargs)
-        return comboBox
+    def createComboBox(self,labelText,placeholder,change,a,size:int=30,groupClasses="",**kwargs):
+        '''
+        create a combobox with a label with the given text
+        a placeholder text and a change onChange function having the parent a
+        
+        Args:
+            labelText(str): the text for the label
+            placeholder(str): a placeholder value
+            change(func): an onChange function
+            a(object): the parent component of the Select control
+            size(int). the size of the input
+        '''
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
+        jpinput=ComboBox(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
+        jpinput.on('input', change)
+        selectorLabel.for_component=jpinput
+        return jpinput
     
     def createInput(self,labelText,placeholder,change,a,size:int=30,groupClasses="",**kwargs):
         '''
@@ -293,6 +306,9 @@ class DataList(jp.Div):
         cls = JustpyBaseComponent
         self.id = cls.next_id
         
+    def clear(self):
+        self.inner_html=""
+        
     def addOption(self,text,value):
         self.inner_html+=f"""<option value="{value}">{text}</option>"""
                  
@@ -309,7 +325,6 @@ class ComboBox(jp.Input):
         self.attributes.append("list")
         self.dataList=DataList(a=self)
         self.list=self.dataList.id
-
 
 class ProgressBar(jp.Div):
     """
