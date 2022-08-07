@@ -15,8 +15,5 @@ def event_demo():
     d.additional_properties =['screenX', 'pageY','altKey','which','movementX','button', 'buttons']
     return wp
 
-parser = argparse.ArgumentParser(description='event demo 1')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(event_demo,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('event demo 1',event_demo)
