@@ -398,6 +398,28 @@ class ProgressBar(jp.Div):
         """
         self.updateProgress(min(100, self.value + value))
 
+class Switch(jp.Input):
+    '''
+    a switch
+    https://mdbootstrap.com/docs/standard/forms/switch/
+    '''
+    
+    def __init__(self,a,labelText:str,**kwargs):
+        '''
+        construct a Switch
+        
+        Args:
+            labelText(str): the text for the label
+            kwargs(): keyword arguments
+        '''
+        self.div=jp.Div(a=a,classes = "form-check form-switch")
+        classes="form-check-input"
+        kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
+        super().__init__(a=self.div,type="checkbox",role="switch",**kwargs)
+        switchLabel=jp.Span(a=self.div,text=labelText,classes="form-check-label")
+        #switchLabel.for_component(self)
+        # <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+        #<label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
 
 class IconButton(jp.Button):
     '''
