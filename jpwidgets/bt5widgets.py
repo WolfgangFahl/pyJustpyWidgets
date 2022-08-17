@@ -7,16 +7,22 @@ Bootstrap5Widgets to be used with
 https://getbootstrap.com/docs/5.0/getting-started/introduction/
  
 '''
+import asyncio
+import hashlib
+import pathlib
+from datetime import datetime, timedelta
 from typing import Callable
 
 import justpy as jp
 import os
+import yaml
 import socket
 import sys
 import traceback
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 from justpy.htmlcomponents import JustpyBaseComponent
+
 
 class App(object):
     '''
@@ -113,7 +119,7 @@ class App(object):
         self.containerbox=jp.parse_html(self.pageHtml(level="container"),a=wp)
         self.headerbox=self.containerbox.name_dict["headerbox"]
         self.contentbox=self.containerbox.name_dict["contentbox"]
-        wp.debug = self.debug
+        wp.debug = getattr(self, "debug", False)
         return wp
     
     def start(self,callback):
@@ -390,11 +396,14 @@ class Alert(jp.Div):
     see https://getbootstrap.com/docs/5.0/components/alerts/
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, alertType:str=None, **kwargs):
         """
         constructor
         """
-        super(Alert, self).__init__(classes="alert alert-warning alert-dismissible fade show", role="alert", **kwargs)
+        if alertType is None:
+            alertType = "warning"
+        alertType = f"alert-{alertType}"
+        super(Alert, self).__init__(classes=f"alert {alertType} alert-dismissible fade show", role="alert", **kwargs)
         conf={
             "data-bs-dismiss":"alert",
             "classes":"btn-close",
@@ -486,3 +495,244 @@ class DebugOutput(jp.Div):
             msg(str): a message to add
         '''
         self.messages.append(msg)
+
+
+class AuthApiInterface:
+    """AuthenticationApi interface defining the methods needed for the login widget"""
+
+    def __init__(self):
+        """constructor"""
+        self.sessions = {}
+
+    def addUser(self, name:str, password:str) -> bool:
+        """
+        creates a new user entry with the given information
+        Args:
+            name: name of the user
+            password: password of the user
+
+        Returns:
+            True if the user creation was successful otherwise False
+        """
+        return NotImplemented
+
+    def existsUser(self, name:str) -> bool:
+        """Returns True if the user exists otherwise False"""
+
+    def removeUser(self, name:str) -> bool:
+        """
+        Remove the user under the given name
+        Args:
+            user: user to remove
+
+        Returns:
+            True if the user removal was successful otherwise False
+        """
+        return NotImplemented
+
+    def isAuthenticated(self, name:str, password:str):
+        """
+        Check if the given name is known and the given password corresponds to the user
+        Args:
+            name: name of the user
+            password: password of the user
+
+        Returns:
+            True if the user is known and the password is correct otherwise False
+        """
+        return NotImplemented
+
+    def login(self, sessionId:str, userName:str=None):
+        """
+        set the given sessionId as logged in
+        Args:
+            sessionId: sessionId of the user
+            userName: name of the user
+        """
+        self.sessions[sessionId] = {
+            "user": userName,
+            "logged_in_at": datetime.now(),
+            "logged_in": True
+        }
+
+    def logout(self, sessionId:str):
+        """logout give sessionId"""
+        del self.sessions[sessionId]
+
+    def isLoggedIn(self, sessionId:str) -> bool:
+        """
+        Checks if the given sessionId is loggedIn
+        """
+        loggedId = False
+        if sessionId in self.sessions:
+            loggedInSince: timedelta = datetime.now() - self.sessions[sessionId].get("logged_in_at")
+            if loggedInSince < timedelta(days=7):
+                loggedId = self.sessions[sessionId].get("logged_in", False)
+        return loggedId
+
+
+class SimpleAuthApi(AuthApiInterface):
+    """A simple authentication api based on YAML"""
+
+    def __init__(self, filepath:str):
+        """
+        constructor
+        Args:
+            filepath: filepath to the yaml containing the authentication information
+        """
+        super().__init__()
+        self.filepath = filepath
+        self.users = {}
+        self._readAuthFile()
+
+    def addUser(self, name:str, password:str) -> bool:
+        if self.existsUser(name):
+            print("User already exists")
+            return False
+        else:
+            self.users[name] = {
+                "name": name,
+                "password_hash": self._hashPassword(password)
+            }
+            self._writeAuthFile()
+            return True
+
+    def _hashPassword(self, password:str):
+        """Hash the given password"""
+        return hashlib.sha512(password.encode("utf-8")).hexdigest()
+
+    def existsUser(self, name:str) -> bool:
+        return name in self.users
+
+    def removeUser(self, name:str) -> bool:
+        if self.existsUser(name):
+            del self.users[name]
+            self._writeAuthFile()
+            # remove user sessions
+            self.sessions = {k:v for k,v in self.sessions.items() if v.get("user") != name}
+            return True
+        else:
+            print("Tried to delete a user that does not exist")
+            return False
+
+    def isAuthenticated(self, name:str, password:str) -> bool:
+        isAuthenticated = False
+        if self.existsUser(name):
+            user = self.users.get(name)
+            pwdHash = self._hashPassword(password)
+            if user.get("password_hash") == pwdHash:
+                isAuthenticated = True
+        return isAuthenticated
+
+
+    def _readAuthFile(self):
+        """read the auth file and store as user information"""
+        pathlib.Path(self.filepath).parent.mkdir(parents=True, exist_ok=True)
+        if os.path.isfile(self.filepath):
+            with open(self.filepath, "r") as fp:
+                try:
+                    users = yaml.safe_load(fp)
+                    if isinstance(users, dict):
+                        self.users = users
+                    else:
+                        raise Exception("Authentication yaml file has not the expected format")
+                except yaml.YAMLError as exc:
+                    print(exc)
+                except Exception as exc:
+                    print(exc)
+        else:
+            # file currently does not exist → create empty file
+            with open(self.filepath, "w") as fp:
+                print("", file=fp)
+
+    def _writeAuthFile(self):
+        """write user information to yaml file"""
+        pathlib.Path(self.filepath).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.filepath, "w") as fp:
+            yaml.dump(self.users, fp)
+
+
+class Login(jp.Div):
+    """
+    login form
+    """
+
+    def __init__(self, authApi:AuthApiInterface, wp:jp.WebPage, label:str=None, redirectPath:str=None, **kwargs):
+        """
+        constructor
+        Args:
+            authApi: api to handle the authentication
+            wp: WebPage used to handle the redirect
+            label: label for the username input field
+            redirectPath: after successful login redirect to this path
+        """
+        if label is None:
+            label="User"
+        if redirectPath is None:
+            redirectPath = "/"
+        self.wp=wp
+        super(Login, self).__init__(classes="container", **kwargs)
+        self.authApi = authApi
+        self.redirectPath = redirectPath
+        self.rowA = jp.Div(a=self, classes="row")
+        self.rowB = jp.Div(a=self, classes="row")
+        self.rowC = jp.Div(a=self, classes="row")
+        self.colA1 = jp.Div(a=self, classes="col-12")
+        self.colB1 = jp.Div(a=self, classes="col-12")
+        self.colC1 = jp.Div(a=self, classes="col-12")
+        self.header = jp.H2(a=self.colA1, text="Login")
+        self.form = jp.Form(a=self.colC1)
+        # user field
+        self.userContainer = jp.Div(a=self, classes="mb-3")
+        self.userLabel = jp.Label(a=self.userContainer, classes="form-label", text=label)
+        self.userInput = jp.Input(a=self.userContainer, classes="form-control")
+        # password field
+        self.pwdContainer = jp.Div(a=self, classes="mb-3")
+        self.pwdLabel = jp.Label(a=self.pwdContainer, classes="form-label", text="Password")
+        self.pwdInput = jp.Input(a=self.pwdContainer, classes="form-control", type="password")
+        # login button
+        self.submit = jp.Button(a=self, classes="btn btn-primary", type="submit", text="Login", click=self.loginClick)
+
+    async def loginClick(self, msg):
+        user = self.userInput.value
+        password = self.pwdInput.value
+        isValid = self.authApi.isAuthenticated(user, password)
+        if isValid:
+            Alert(a=self.colB1, alertType="success", text="Login successful. You are now logged in")
+            self.authApi.login(msg.session_id, user)
+            await self.wp.update()
+            await asyncio.sleep(1)
+            self.wp.redirect = self.redirectPath
+            return
+        else:
+            Alert(a=self.colB1, text="Login not successful")
+
+
+class Logout(jp.Div):
+    """Logout widget"""
+
+    def __init__(self, authApi:AuthApiInterface, wp:jp.WebPage, redirectPath:str=None, **kwargs):
+        """
+        constructor
+        Args:
+            authApi: api to handle the authentication
+            wp: WebPage used to handle the redirect
+            redirectPath: after successful login redirect to this path
+        """
+        if redirectPath is None:
+            redirectPath = "/"
+        super().__init__(**kwargs)
+        self.wp=wp
+        self.authApi = authApi
+        self.redirectPath = redirectPath
+        self.logoutBtn =  jp.Button(a=self, classes="btn btn-danger", text="Logout", click=self.logoutClick)
+
+    async def logoutClick(self, msg):
+        """handle logout click"""
+        sessionId = msg.session_id
+        self.authApi.logout(sessionId)
+        Alert(a=self, alertType="success", text="Logout successful. You are now logged out")
+        await self.wp.update()
+        await asyncio.sleep(1)
+        self.wp.redirect = self.redirectPath
+        return
