@@ -151,7 +151,7 @@ class App(object):
         '''
         self.errors.inner_html=""
         
-    def createSelectorGroupWithLabel(self,a,text:str):
+    def createSelectorGroupWithLabel(self,a,text:str,classes=""):
         '''
         create a selector Group with the given label
         '''
@@ -161,12 +161,12 @@ class App(object):
         #<span class="input-group-text" id="">First and last name</span>
         #</div>
         #selectorLabel=jp.Label(text=text,a=a,classes="form-label label")
-        selectorGroup=jp.Div(a=a,classes="input-group")
+        selectorGroup=jp.Div(a=a,classes=f"input-group {classes}")
         selectorGroupPrepend=jp.Div(a=selectorGroup,classes="input-group-prepend")
         selectorLabel=jp.Span(text=text,a=selectorGroupPrepend,classes="input-group-text")
         return selectorGroup,selectorLabel
         
-    def createSelect(self,labelText,value,change,a,**kwargs):
+    def createSelect(self,labelText,value,change,a,groupClasses="",**kwargs):
         '''
         create a select control with a label with the given text, the default value
         and a change onChange function having the parent a
@@ -177,16 +177,29 @@ class App(object):
             change(func): an onChange function
             a(object): the parent component of the Select control
         '''
-        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
         select=jp.Select(a=selectorGroup,classes="form-select",value=value,change=change,**kwargs)
         return select
     
-    def createComboBox(self,labelText,a,**kwargs):
-        selectorGroup,_selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
-        comboBox=ComboBox(a=selectorGroup,**kwargs)
-        return comboBox
+    def createComboBox(self,labelText,placeholder,change,a,size:int=30,groupClasses="",**kwargs):
+        '''
+        create a combobox with a label with the given text
+        a placeholder text and a change onChange function having the parent a
+        
+        Args:
+            labelText(str): the text for the label
+            placeholder(str): a placeholder value
+            change(func): an onChange function
+            a(object): the parent component of the Select control
+            size(int). the size of the input
+        '''
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
+        jpinput=ComboBox(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
+        jpinput.on('input', change)
+        selectorLabel.for_component=jpinput
+        return jpinput
     
-    def createInput(self,labelText,placeholder,change,a,size:int=30, **kwargs):
+    def createInput(self,labelText,placeholder,change,a,size:int=30,groupClasses="",**kwargs):
         '''
         create an input control with a label with the given text
         a placeholder text and a change onChange function having the parent a
@@ -198,9 +211,24 @@ class App(object):
             a(object): the parent component of the Select control
             size(int). the size of the input
         '''
-        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText)
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
         jpinput=jp.Input(a=selectorGroup,classes="form-input",size=size,placeholder=placeholder, **kwargs)
         jpinput.on('input', change)
+        selectorLabel.for_component=jpinput
+        return jpinput
+    
+    def createCheckbox(self,labelText,a,groupClasses="",**kwargs):
+        '''
+        create an checkBox control with a label with the given text
+        having the parent a
+        
+        Args:
+            labelText(str): the text for the label
+            a(object): the parent component of the Select control
+            size(int). the size of the input
+        '''
+        selectorGroup,selectorLabel=self.createSelectorGroupWithLabel(a, text=labelText,classes=groupClasses)
+        jpinput=jp.Input(a=selectorGroup,type="checkbox",classes="form-check-input", **kwargs)
         selectorLabel.for_component=jpinput
         return jpinput
         
@@ -299,6 +327,9 @@ class DataList(jp.Div):
         cls = JustpyBaseComponent
         self.id = cls.next_id
         
+    def clear(self):
+        self.inner_html=""
+        
     def addOption(self,text,value):
         self.inner_html+=f"""<option value="{value}">{text}</option>"""
                  
@@ -315,7 +346,6 @@ class ComboBox(jp.Input):
         self.attributes.append("list")
         self.dataList=DataList(a=self)
         self.list=self.dataList.id
-
 
 class ProgressBar(jp.Div):
     """
@@ -374,6 +404,39 @@ class ProgressBar(jp.Div):
         """
         self.updateProgress(min(100, self.value + value))
 
+class Switch(jp.Input):
+    '''
+    a switch
+    https://mdbootstrap.com/docs/standard/forms/switch/
+    '''
+    
+    def __init__(self,a,labelText:str,**kwargs):
+        '''
+        construct a Switch
+        
+        Args:
+            labelText(str): the text for the label
+            kwargs(): keyword arguments
+        '''
+        self.div=jp.Div(a=a,classes = "form-check form-switch")
+        classes="form-check-input"
+        kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
+        super().__init__(a=self.div,type="checkbox",role="switch",**kwargs)
+        switchLabel=jp.Span(a=self.div,text=labelText,classes="form-check-label")
+        #switchLabel.for_component(self)
+        # <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+        #<label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
+
+class IconButton(jp.Button):
+    '''
+    a button with an icon
+     see https://www.w3schools.com/howto/howto_css_icon_buttons.asp 
+    '''
+    def __init__(self,iconName,**kwargs):
+        classes = "btn"
+        kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
+        super().__init__(**kwargs)
+        self.icon=jp.I(a=self,classes=f'mdi mdi-{iconName} headerboxicon')     
 
 class Spinner(jp.Div):
     """

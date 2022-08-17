@@ -4,8 +4,6 @@ Created on 2022-07-26
 see https://justpy.io/tutorial/sessions/
 
 '''
-import argparse
-import socket
 import justpy as jp
 import asyncio
 
@@ -117,9 +115,7 @@ async def login_successful(wp, s_id):
     await asyncio.sleep(3)
     wp.redirect = '/login_test'
 
-parser = argparse.ArgumentParser(description='login_test')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(login_test,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('login demo',login_test)
+
 

@@ -5,8 +5,6 @@ see https://github.com/partrita/justPy/blob/master/Number_input.py
 @author: wf
 '''
 import justpy as jp
-import argparse
-import socket
 
 input_classes = "m-2 bg-gray-200 border-2 border-gray-200 rounded w-64 py-2 px-4 text-gray-700 focus:outline-none focus:bg-white focus:border-purple-500"
 p_classes = 'm-2 p-2 h-32 text-xl border-2'
@@ -21,8 +19,5 @@ async def input_demo(request):
     in1.on('input', my_input)
     return wp
 
-parser = argparse.ArgumentParser(description='number_input')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(input_demo,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('number input',input_demo)

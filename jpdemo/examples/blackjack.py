@@ -1,9 +1,7 @@
 # Simplified blackjack game using https://deckofcardsapi.com/ API
 # Not all rules are implemented
-import socket
 import justpy as jp
 import asyncio
-import argparse
 
 card_size = 0.5
 card_width = int(226 * card_size)
@@ -148,10 +146,6 @@ async def blackjack():
     wp.hand_value_div = jp.Div(text=f'Hand value: {hand_value(wp.player_hand)}', a=wp.outer_div, classes='text-2xl')
     return wp
 
-
-parser = argparse.ArgumentParser(description='blackjack demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(blackjack,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('blackjack demo',blackjack)
 

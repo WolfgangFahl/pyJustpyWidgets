@@ -3,8 +3,6 @@ Created on 24.07.2022
 
 @author: wf
 '''
-import argparse
-import socket
 import justpy as jp
 import time
 import asyncio
@@ -24,8 +22,5 @@ async def clock_init():
 async def clock_test():
     return wp
 
-parser = argparse.ArgumentParser(description='clock demo')
-parser.add_argument('--host',default=socket.getfqdn())
-parser.add_argument('--port',type=int,default=8000)
-args = parser.parse_args()
-jp.justpy(clock_test, startup=clock_init,host=args.host,port=args.port)
+from  jpdemo.examples.basedemo import Demo
+Demo('clock_demo',clock_test,startup=clock_init)
