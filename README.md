@@ -16,3 +16,4 @@ Widgets and demo for [Justpy](https://justpy.io/)
 
 ### Authors
 * [Wolfgang Fahl](http://www.bitplan.com/Wolfgang_Fahl)
+* Tim Holzheim
