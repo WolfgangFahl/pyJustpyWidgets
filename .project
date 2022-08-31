@@ -3,6 +3,7 @@
 	<name>pyJustpyWidgets</name>
 	<comment></comment>
 	<projects>
+		<project>justpy</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

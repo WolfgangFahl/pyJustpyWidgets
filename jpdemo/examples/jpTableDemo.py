@@ -92,8 +92,10 @@ class JpTableDemo(App):
                 itemId=wikidataLink.replace("http://www.wikidata.org/entity/","")
                 link=Link.create(url=wikidataLink,text=itemId)
                 self.table2.updateCell(rowKey, "president",link)
+            pass
         except Exception as ex:
             self.handleException(ex)
+        pass
             
     def addButtonColumn(self,table,column,onClick):
         '''
