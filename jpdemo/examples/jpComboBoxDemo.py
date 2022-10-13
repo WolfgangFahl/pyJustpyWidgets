@@ -46,7 +46,7 @@ class JpComboBoxDemo(App):
         self.addMenuLink(text='Home',icon='home', href="/")
         self.addMenuLink(text='github',icon='github', href="https://github.com/WolfgangFahl/pyJustpyWidgets")
         self.addMenuLink(text='Documentation',icon='file-document',href="https://wiki.bitplan.com/index.php/PyJustpyWidgets")
-        self.addMenuLink(text='Source',icon='file-code',href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/examples/jpComboBoxDemo.py")
+        self.addMenuLink(text='Source',icon='file-code',href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/jpexamples/jpComboBoxDemo.py")
         
     def getCountries(self):
         countriesUrl="https://raw.githubusercontent.com/stefangabos/world_countries/master/data/countries/en/countries.json"

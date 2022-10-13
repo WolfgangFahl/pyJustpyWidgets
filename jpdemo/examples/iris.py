@@ -1,4 +1,4 @@
-# https://raw.githubusercontent.com/elimintz/justpy/master/examples/iris.py
+# https://raw.githubusercontent.com/elimintz/justpy/master/jpexamples/iris.py
 import justpy as jp
 import pandas as pd
 

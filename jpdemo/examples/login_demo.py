@@ -49,7 +49,7 @@ class Bootstrap5LoginExampleApp(App):
         self.addMenuLink(text='Documentation', icon='file-document',
                          href="https://wiki.bitplan.com/index.php/PyJustpyWidgets")
         self.addMenuLink(text='Source', icon='file-code',
-                         href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/examples/login_demo.py")
+                         href="https://github.com/WolfgangFahl/pyJustpyWidgets/blob/main/jpdemo/jpexamples/login_demo.py")
         self.addMenuLink(text='Login', icon="login", href="/login")
         self.addMenuLink(text='Logout', icon="logout", href="/logout")
         self.authApi = SimpleAuthApi("/tmp/pyJustpyWidgets/logindemo.yaml")

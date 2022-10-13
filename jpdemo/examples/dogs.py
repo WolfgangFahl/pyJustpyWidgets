@@ -1,4 +1,4 @@
-# see https://raw.githubusercontent.com/elimintz/justpy/master/examples/dogs.py
+# see https://raw.githubusercontent.com/elimintz/justpy/master/jpexamples/dogs.py
 from justpy import *
 # https://dog.ceo/api/breeds/list/all    dict of all breeds under
 

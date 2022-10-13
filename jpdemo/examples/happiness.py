@@ -1,4 +1,4 @@
-# https://raw.githubusercontent.com/elimintz/justpy/master/examples/happiness.py
+# https://raw.githubusercontent.com/elimintz/justpy/master/jpexamples/happiness.py
 import justpy as jp
 import pandas as pd
 import numpy as np
