@@ -404,6 +404,7 @@ class ProgressBar(jp.Div):
         """
         self.updateProgress(min(100, self.value + value))
 
+
 class Switch(jp.Input):
     '''
     a switch
@@ -418,14 +419,25 @@ class Switch(jp.Input):
             labelText(str): the text for the label
             kwargs(): keyword arguments
         '''
-        self.div=jp.Div(a=a,classes = "form-check form-switch")
+        self.div=jp.Div(a=a, classes="form-check form-switch")
         classes="form-check-input"
         kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
-        super().__init__(a=self.div,type="checkbox",role="switch",**kwargs)
-        switchLabel=jp.Span(a=self.div,text=labelText,classes="form-check-label")
-        #switchLabel.for_component(self)
-        # <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-        #<label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
+        super().__init__(a=self.div, type="checkbox", role="switch", **kwargs)
+        self.switchLabel = jp.Label(
+                a=self.div,
+                text=labelText,
+                classes="form-check-label"
+        )
+        self.switchLabel.for_component = self
+
+    def update_label(self, label:str):
+        """
+        update the label of the switch
+        Args:
+            label: new label of the switch
+        """
+        self.switchLabel.text = label
+
 
 class IconButton(jp.Button):
     '''
