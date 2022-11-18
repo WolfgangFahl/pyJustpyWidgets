@@ -299,7 +299,7 @@ class Link:
     a link
     '''
     @staticmethod
-    def create(url,text,tooltip=None,target=None):
+    def create(url,text,tooltip=None,target=None,style:str=None):
         '''
         create a link for the given url and text
         
@@ -307,10 +307,13 @@ class Link:
             url(str): the url
             text(str): the text
             tooltip(str): an optional tooltip
+            target(str): e.g. _blank
+            style(str): any style to be applied
         '''
         title="" if tooltip is None else f" title='{tooltip}'"
         target="" if target is None else f" target=' {target}'"
-        link=f"<a href='{url}'{title}{target}>{text}</a>"
+        style="" if style is None else f" style='{style}'" 
+        link=f"<a href='{url}'{title}{target}{style}>{text}</a>"
         return link
 
 class DataList(jp.Div):
