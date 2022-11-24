@@ -345,6 +345,27 @@ class App(object):
          target(str): "_blank" or None
         '''
         self.menu[text]=MenuEntry(text,icon,href,target)
+        
+class About(jp.Div):
+    """
+    About Div for a given vresion
+    """
+    
+    def __init__(self,version,a,**kwargs):
+        """
+        construct an about Div for the given version
+        """
+        jp.Div.__init__(self,a=a,**kwargs)
+        
+        jp.Div(text=f"{version.description}",a=self)
+        jp.Div(text=f"version: {version.version}",a=self)
+        jp.Div(text=f"updated: {version.updated}",a=self)
+        jp.Div(text=f"authors: {version.authors}",a=self)
+        # url,text,tooltip=None,target=None,style:str=None
+        jp.Div(inner_html=Link.create(url=version.doc_url,text="documentation",target="_blank"),a=self)
+        jp.Div(inner_html=Link.create(url=version.chat_url,text="discussion",target="_blank"),a=self)
+        jp.Div(inner_html=Link.create(url=version.cm_url,text="source",target="_blank"),a=self)
+    
 
 class MenuEntry:
     '''
