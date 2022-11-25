@@ -448,12 +448,12 @@ class SimpleCheckbox(jp.Div):
     """
     a simple Checkbox
     """ 
-    def __init__(self,a,labelText,**kwargs):
+    def __init__(self,a,labelText,classes="col-1",**kwargs):
         """
         create a simple checkbox with the given label
         """
-        jp.Div.__init__(self,a=a,classes="col-1",data={'checked': False})
-        self.checkbox=jp.Input(a=self,type="checkbox",classes="form-check-input", model=[self, 'checked'],**kwargs)
+        jp.Div.__init__(self,a=a,classes=classes,data={'checked': False},**kwargs)
+        self.checkbox=jp.Input(a=self,type="checkbox", classes="form-check-input",model=[self, 'checked'],**kwargs)
         self.label=jp.Label(a=self,text=labelText)
         
     def check(self,checked:bool):
