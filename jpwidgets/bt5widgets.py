@@ -443,6 +443,24 @@ class ComboBox(jp.Input):
         self.attributes.append("list")
         self.dataList=DataList(a=self)
         self.list=self.dataList.id
+        
+class SimpleCheckbox(jp.Div):
+    """
+    a simple Checkbox
+    """ 
+    def __init__(self,a,labelText,**kwargs):
+        """
+        create a simple checkbox with the given label
+        """
+        jp.Div.__init__(self,a=a,classes="col-1",data={'checked': False})
+        self.checkbox=jp.Input(a=self,type="checkbox",classes="form-check-input", model=[self, 'checked'],**kwargs)
+        self.label=jp.Label(a=self,text=labelText)
+        
+    def check(self,checked:bool):
+        self.data["checked"]=checked
+        
+    def isChecked(self)->bool:
+        return self.data["checked"]
 
 class ProgressBar(jp.Div):
     """
