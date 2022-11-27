@@ -22,7 +22,7 @@ import traceback
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 from justpy.htmlcomponents import JustpyBaseComponent
-
+from dataclasses import dataclass
 
 class App(object):
     '''
@@ -518,6 +518,10 @@ class ProgressBar(jp.Div):
         increment the progress bar by the given value
         """
         self.updateProgress(min(100, self.value + value))
+        
+@dataclass
+class State:
+    value:bool
 
 class Switch(jp.Input):
     '''
@@ -525,7 +529,7 @@ class Switch(jp.Input):
     https://mdbootstrap.com/docs/standard/forms/switch/
     '''
     
-    def __init__(self,a,labelText:str,**kwargs):
+    def __init__(self,a,labelText:str,state:State=None,div_classes:str="",**kwargs):
         '''
         construct a Switch
         
@@ -533,15 +537,20 @@ class Switch(jp.Input):
             labelText(str): the text for the label
             kwargs(): keyword arguments
         '''
-        self.div=jp.Div(a=a,classes = "form-check form-switch")
+        self.div=jp.Div(a=a,classes = f"form-check form-switch {div_classes}")
         classes="form-check-input"
         kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
         super().__init__(a=self.div,type="checkbox",role="switch",**kwargs)
-        switchLabel=jp.Span(a=self.div,text=labelText,classes="form-check-label")
-        #switchLabel.for_component(self)
-        # <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-        #<label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
-
+        if state:
+            self.state=state
+            self.checked=self.state.value
+            self.on("input",self.onChangeState)
+            
+        self.switchLabel=jp.Span(a=self.div,text=labelText,classes="form-check-label")
+        
+    def onChangeState(self,msg):
+        self.state.value=msg.checked
+    
 class IconButton(jp.Button):
     '''
     a button with an icon
