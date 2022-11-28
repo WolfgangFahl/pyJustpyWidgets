@@ -222,4 +222,63 @@ class TokenSequence(jp.QDiv):
             else:
                 label, value = token
                 Token(label, value, color=colorMap.get(label),a=self)
-        
+
+
+class HideShow(jp.Div):
+    """
+    Toggle a container with a
+    """
+    TRIANGLE_LEFT = "◀"
+    TRIANGLE_DOWN = "▼"
+
+    def __init__(
+            self,
+            label: str,
+            content: jp.JustpyBaseComponent,
+            label_if_hidden: str = None,
+            show_content: bool = True,
+            **kwargs):
+        """
+        constructor
+        Args:
+            label: label of the button
+            content: justpy component with the content to hide/show
+            label_if_hidden: label to be shown if the content is hidden. If not set label is used.
+            show_content: If True show the content at page load otherwise the content is hidden.
+            **kwargs: additional justpy arguments
+        """
+        super(HideShow, self).__init__(**kwargs)
+        self.label = label
+        self.label_if_hidden = label_if_hidden
+        self.show_content = show_content
+        self.btn = jp.Button(a=self, text=self._getStatusLabel(), on_click=self.toggleHideShow)
+        self.content_box = jp.Div(a=self)
+        self.content = content
+        self.content_box.add_component(self.content)
+        self._updateContentVisibility()
+
+    def _getStatusLabel(self) -> str:
+        """
+        Returns the Icon of the current status
+        """
+        if self.show_content:
+            icon = self.TRIANGLE_DOWN
+            label = self.label
+        else:
+            icon = self.TRIANGLE_LEFT
+            label = self.label_if_hidden if self.label_if_hidden is not None else self.label
+        return f"{label} {icon}"
+
+    def _updateContentVisibility(self):
+        """
+        Update the visibility of the content to the current status
+        """
+        self.content_box.hidden(not self.show_content)
+
+    def toggleHideShow(self, msg):
+        """
+        Toggle the visibility status of the content
+        """
+        self.show_content = not self.show_content
+        self._updateContentVisibility()
+        self.btn.text = self._getStatusLabel()
