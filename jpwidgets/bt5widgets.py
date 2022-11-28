@@ -22,7 +22,7 @@ import traceback
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
 from justpy.htmlcomponents import JustpyBaseComponent
-
+from dataclasses import dataclass
 
 class App(object):
     '''
@@ -150,7 +150,80 @@ class App(object):
         clear the Error area
         '''
         self.errors.inner_html=""
-        
+
+    def getLanguages(self):
+        # see https://github.com/sahajsk21/Anvesha/blob/master/src/components/topnav.js
+        languages= [
+                ["ar", "&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;"],
+                ["arz", "&#1605;&#1589;&#1585;&#1609;"],
+                ["ast", "Asturianu"],
+                ["az", "Az&#601;rbaycanca"],
+                ["azb", "&#1578;&#1734;&#1585;&#1705;&#1580;&#1607;"],
+                ["be", "&#1041;&#1077;&#1083;&#1072;&#1088;&#1091;&#1089;&#1082;&#1072;&#1103;"],
+                ["bg", "&#1041;&#1098;&#1083;&#1075;&#1072;&#1088;&#1089;&#1082;&#1080;"],
+                ["bn", "&#2476;&#2494;&#2434;&#2482;&#2494;"],
+                ["ca", "Catal&agrave;"],
+                ["ce", "&#1053;&#1086;&#1093;&#1095;&#1080;&#1081;&#1085;"],
+                ["ceb", "Sinugboanong Binisaya"],
+                ["cs", "&#268;e&scaron;tina"],
+                ["cy", "Cymraeg"],
+                ["da", "Dansk"],
+                ["de", "Deutsch"],
+                ["el", "&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;&#940;"],
+                ["en", "English"],
+                ["eo", "Esperanto"],
+                ["es", "Espa&ntilde;ol"],
+                ["et", "Eesti"],
+                ["eu", "Euskara"],
+                ["fa", "&#1601;&#1575;&#1585;&#1587;&#1740;"],
+                ["fi", "Suomi"],
+                ["fr", "Fran&ccedil;ais"],
+                ["gl", "Galego"],
+                ["he", "&#1506;&#1489;&#1512;&#1497;&#1514;"],
+                ["hi", "&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;"],
+                ["hr", "Hrvatski"],
+                ["hu", "Magyar"],
+                ["hy", "&#1344;&#1377;&#1397;&#1381;&#1408;&#1381;&#1398;"],
+                ["id", "Bahasa Indonesia"],
+                ["it", "Italiano"],
+                ["ja", "&#26085;&#26412;&#35486;"],
+                ["ka", "&#4325;&#4304;&#4320;&#4311;&#4323;&#4314;&#4312;"],
+                ["kk", "&#1178;&#1072;&#1079;&#1072;&#1179;&#1096;&#1072; / Qazaq&#351;a / &#1602;&#1575;&#1586;&#1575;&#1602;&#1588;&#1575;"],
+                ["ko", "&#54620;&#44397;&#50612;"],
+                ["la", "Latina"],
+                ["lt", "Lietuvi&#371;"],
+                ["lv", "Latvie&scaron;u"],
+                ["min", "Bahaso Minangkabau"],
+                ["ms", "Bahasa Melayu"],
+                ["nan", "B&acirc;n-l&acirc;m-g&uacute; / H&#333;-l&oacute;-o&#275;"],
+                ["nb", "Norsk (bokm&aring;l)"],
+                ["nl", "Nederlands"],
+                ["nn", "Norsk (nynorsk)"],
+                ["pl", "Polski"],
+                ["pt", "Portugu&ecirc;s"],
+                ["ro", "Rom&acirc;n&#259;"],
+                ["ru", "&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;"],
+                ["sh", "Srpskohrvatski / &#1057;&#1088;&#1087;&#1089;&#1082;&#1086;&#1093;&#1088;&#1074;&#1072;&#1090;&#1089;&#1082;&#1080;"],
+                ["sk", "Sloven&#269;ina"],
+                ["sl", "Sloven&scaron;&#269;ina"],
+                ["sr", "&#1057;&#1088;&#1087;&#1089;&#1082;&#1080; / Srpski"],
+                ["sv", "Svenska"],
+                ["ta", "&#2980;&#2990;&#3007;&#2996;&#3021;"],
+                ["tg", "&#1058;&#1086;&#1207;&#1080;&#1082;&#1251;"],
+                ["th", "&#3616;&#3634;&#3625;&#3634;&#3652;&#3607;&#3618;"],
+                ["tr", "T&uuml;rk&ccedil;e"],
+                ["tt", "&#1058;&#1072;&#1090;&#1072;&#1088;&#1095;&#1072; / Tatar&ccedil;a"],
+                ["uk", "&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;"],
+                ["ur", "&#1575;&#1585;&#1583;&#1608;"],
+                ["uz", "O&#699;zbekcha / &#1038;&#1079;&#1073;&#1077;&#1082;&#1095;&#1072;"],
+                ["vi", "Ti&#7871;ng Vi&#7879;t"],
+                ["vo", "Volap&uuml;k"],
+                ["war", "Winaray"],
+                ["yue", "&#31925;&#35486;"],
+                ["zh", "&#20013;&#25991;"],
+            ]
+        return languages
+
     def createSelectorGroupWithLabel(self,a,text:str,classes=""):
         '''
         create a selector Group with the given label
@@ -273,6 +346,27 @@ class App(object):
         '''
         self.menu[text]=MenuEntry(text,icon,href,target)
 
+class About(jp.Div):
+    """
+    About Div for a given vresion
+    """
+
+    def __init__(self,version,a,**kwargs):
+        """
+        construct an about Div for the given version
+        """
+        jp.Div.__init__(self,a=a,**kwargs)
+
+        jp.Div(text=f"{version.description}",a=self)
+        jp.Div(text=f"version: {version.version}",a=self)
+        jp.Div(text=f"updated: {version.updated}",a=self)
+        jp.Div(text=f"authors: {version.authors}",a=self)
+        # url,text,tooltip=None,target=None,style:str=None
+        jp.Div(inner_html=Link.create(url=version.doc_url,text="documentation",target="_blank"),a=self)
+        jp.Div(inner_html=Link.create(url=version.chat_url,text="discussion",target="_blank"),a=self)
+        jp.Div(inner_html=Link.create(url=version.cm_url,text="source",target="_blank"),a=self)
+
+
 class MenuEntry:
     '''
     a menu entry
@@ -299,7 +393,7 @@ class Link:
     a link
     '''
     @staticmethod
-    def create(url,text,tooltip=None,target=None):
+    def create(url,text,tooltip=None,target=None,style:str=None):
         '''
         create a link for the given url and text
         
@@ -307,10 +401,13 @@ class Link:
             url(str): the url
             text(str): the text
             tooltip(str): an optional tooltip
+            target(str): e.g. _blank
+            style(str): any style to be applied
         '''
         title="" if tooltip is None else f" title='{tooltip}'"
         target="" if target is None else f" target=' {target}'"
-        link=f"<a href='{url}'{title}{target}>{text}</a>"
+        style="" if style is None else f" style='{style}'"
+        link=f"<a href='{url}'{title}{target}{style}>{text}</a>"
         return link
 
 class DataList(jp.Div):
@@ -346,6 +443,24 @@ class ComboBox(jp.Input):
         self.attributes.append("list")
         self.dataList=DataList(a=self)
         self.list=self.dataList.id
+
+class SimpleCheckbox(jp.Div):
+    """
+    a simple Checkbox
+    """
+    def __init__(self,a,labelText,classes="col-1",**kwargs):
+        """
+        create a simple checkbox with the given label
+        """
+        jp.Div.__init__(self,a=a,classes=classes,data={'checked': False},**kwargs)
+        self.checkbox=jp.Input(a=self,type="checkbox", classes="form-check-input",model=[self, 'checked'],**kwargs)
+        self.label=jp.Label(a=self,text=labelText)
+
+    def check(self,checked:bool):
+        self.data["checked"]=checked
+
+    def isChecked(self)->bool:
+        return self.data["checked"]
 
 class ProgressBar(jp.Div):
     """
@@ -404,6 +519,10 @@ class ProgressBar(jp.Div):
         """
         self.updateProgress(min(100, self.value + value))
 
+@dataclass
+class State:
+    value:bool
+
 
 class Switch(jp.Input):
     '''
@@ -411,7 +530,7 @@ class Switch(jp.Input):
     https://mdbootstrap.com/docs/standard/forms/switch/
     '''
     
-    def __init__(self,a,labelText:str,**kwargs):
+    def __init__(self,a,labelText:str,state:State=None,div_classes:str="",**kwargs):
         '''
         construct a Switch
         
@@ -419,16 +538,24 @@ class Switch(jp.Input):
             labelText(str): the text for the label
             kwargs(): keyword arguments
         '''
-        self.div=jp.Div(a=a, classes="form-check form-switch")
+        self.div=jp.Div(a=a,classes = f"form-check form-switch {div_classes}")
         classes="form-check-input"
         kwargs["classes"] = f"{classes} {kwargs.get('classes', '')}"
-        super().__init__(a=self.div, type="checkbox", role="switch", **kwargs)
+        super().__init__(a=self.div,type="checkbox",role="switch",**kwargs)
+        if state:
+            self.state=state
+            self.checked=self.state.value
+            self.on("input",self.onChangeState)
+
         self.switchLabel = jp.Label(
                 a=self.div,
                 text=labelText,
                 classes="form-check-label"
         )
         self.switchLabel.for_component = self
+
+    def onChangeState(self,msg):
+        self.state.value=msg.checked
 
     def update_label(self, label:str):
         """
@@ -437,7 +564,6 @@ class Switch(jp.Input):
             label: new label of the switch
         """
         self.switchLabel.text = label
-
 
 class IconButton(jp.Button):
     '''
