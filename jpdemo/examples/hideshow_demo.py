@@ -8,13 +8,11 @@ def hide_show_demo():
     """
     wp = jp.WebPage()
     wp.debug = True
-    content = jp.Div(text="Hello World")
     hide_show = HideShow(
-            a=wp,
-            label="Hide Content",
-            content=content,
-            label_if_hidden="Show Content",
-            show_content=False
+            text="Hello World",
+            hide_show_label=("Hide Content","Show Content"),
+            show_content=False,
+            a=wp
     )
     return wp
 
