@@ -3,6 +3,9 @@ from jpwidgets.widgets import HideShow
 
 
 def hide_show_demo():
+    """
+    demonstrate the HideShow widget
+    """
     wp = jp.WebPage()
     wp.debug = True
     content = jp.Div(text="Hello World")

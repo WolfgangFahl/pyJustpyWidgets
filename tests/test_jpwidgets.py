@@ -3,7 +3,6 @@ Created on 2022-05-15
 
 @author: wf
 '''
-import unittest
 from tests.basetest import BaseTest
 
 class TestJpWidgets(BaseTest):
