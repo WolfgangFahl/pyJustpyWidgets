@@ -409,6 +409,20 @@ class Link:
         style="" if style is None else f" style='{style}'"
         link=f"<a href='{url}'{title}{target}{style}>{text}</a>"
         return link
+    
+    @staticmethod
+    def newTab(url,text,tooltip=None,style:str=None):
+        '''
+        create a link for the given url and text
+        
+        Args:
+            url(str): the url
+            text(str): the text
+            tooltip(str): an optional tooltip
+            style(str): any style to be applied
+        '''
+        return Link.create(url=url, text=text, tooltip=tooltip, target="_blank", style=style)
+ 
 
 class DataList(jp.Div):
     '''
