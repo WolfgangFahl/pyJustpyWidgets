@@ -624,6 +624,7 @@ class Alert(jp.Div):
             "classes":"btn-close",
             "aria-label":"Close"
         }
+        self.contentDiv=jp.Div(a=self)
         self.btn = jp.Button(a=self, **conf)
         self.btn.on("click", self.delete_alert)
 
